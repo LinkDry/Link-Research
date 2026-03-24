@@ -36,6 +36,16 @@ Rules:
 - may be append-only or write-once
 - must not contradict the primary view
 
+### Secondary Planning Input
+
+A file that feeds a canonical state transition but is not itself the canonical active state.
+
+Rules:
+
+- may remain editable before a lock or promotion event
+- must be specific enough for downstream skills to consume safely
+- must not be mistaken for the locked or canonical record after promotion
+
 ### Derived Projection
 
 A generated file that aggregates data from more than one object.
@@ -66,6 +76,7 @@ Rules:
 | `memory/lessons-learned.md` | primary view | Memory State | human-readable long-term learning summary | append, compact, promote |
 | `projects/<slug>/results.tsv` | secondary evidence view | Experiment State | append-only results ledger | append only |
 | `projects/<slug>/plans/<idea>/anchor.md` | secondary evidence view | Experiment State | immutable anchor evidence | write once per anchor version |
+| `projects/<slug>/plans/<idea>/experiment-plan.md` | secondary planning input | planning input for Experiment State | editable pre-anchor experiment design | overwrite until anchor lock or explicit revision |
 | `projects/<slug>/decision-tree.md` | secondary evidence view | Experiment State | branch governance history | append and summarize |
 | `memory/archive/*.md` | historical archive | Memory State | compacted global lesson history | append and rotate |
 | `projects/<slug>/archive/*.md` | historical archive | Experiment State | completed branch or experiment case record | append new archive record |
@@ -109,6 +120,12 @@ Rules:
 - owns the locked research claim and validation intent for one branch line
 - must never be rewritten to match later results
 - new scientific framing requires a new anchor version or branch
+
+### `experiment-plan.md`
+
+- owns the editable pre-anchor experiment design for the active branch line
+- must be specific enough for `anchor-wrapper` to lock a falsifiable anchor
+- must not be treated as the canonical locked claim after `anchor.md` exists
 
 ### `lessons-learned.md`
 

@@ -96,6 +96,7 @@ Experiment State does not store:
 
 ### `next_experiment_action`
 
+- `run-first-experiment`
 - `rerun`
 - `tweak-mutable-vars`
 - `branch`
@@ -122,4 +123,3 @@ No meaningful verdict should exist without a traceable evidence path:
 - completed experiment-line summary table
 
 It should not become the only storage location for raw experiment results.
-
