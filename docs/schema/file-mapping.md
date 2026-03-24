@@ -82,7 +82,8 @@ Rules:
 | `projects/<slug>/workspace/reviews/<experiment_id>/judge-report-<iteration>.json` | secondary evidence view | Experiment State | structured verdict rationale and decision options for one judged iteration | overwrite per judged iteration artifact |
 | `projects/<slug>/decision-tree.md` | secondary evidence view | Experiment State | branch governance history | append and summarize |
 | `memory/archive/*.md` | historical archive | Memory State | compacted global lesson history | append and rotate |
-| `projects/<slug>/archive/*.md` | historical archive | Experiment State | completed branch or experiment case record | append new archive record |
+| `projects/<slug>/archive/archive-<experiment_id>.md` | historical archive | Experiment State | completed experiment-line case record | append new archive record |
+| `projects/<slug>/archive/artifacts/<experiment_id>/` | historical archive | Experiment State | preserved workspace artifact bundle for one archived line | move or snapshot into bundle |
 | `projects/<slug>/workspace/dashboard-data.json` | derived projection | derived from Project, Experiment, Run, Memory | dashboard payload for UI shell | regenerate only |
 
 ## Source-of-Truth Rules
@@ -154,6 +155,19 @@ Rules:
 - owns reusable abstractions
 - must reference project archives rather than duplicate their full detail
 - global lesson compaction belongs in `memory/archive/`, not project archives
+
+### `archive-<experiment_id>.md`
+
+- owns the full project-local closure record for one archived experiment line
+- may summarize evidence, failure class, and preserved artifacts
+- must point back to canonical IDs, evidence refs, and archive artifact paths
+- must not replace active Experiment State
+
+### `archive/artifacts/<experiment_id>/`
+
+- owns preserved workspace outputs attributable to one archived line
+- may contain moved or snapshotted artifacts
+- must not be treated as canonical active workspace state
 
 ## Projection Rules
 

@@ -33,12 +33,12 @@ Experiment State does not store:
 
 | Field | Type | Description | Primary Consumer |
 |------|------|-------------|------------------|
-| `experiment_id` | id | stable experiment-line identity | all layers |
-| `idea_id` | id | owning idea | Claude |
-| `branch_id` | id | current branch identity | Claude |
+| `experiment_id` | id/null | stable active experiment-line identity, or `null` when no line is selected | all layers |
+| `idea_id` | id/null | owning idea for the active line, or `null` when no line is selected | Claude |
+| `branch_id` | id/null | current branch identity, or `null` when no line is selected | Claude |
 | `status` | enum | lifecycle state for this experiment line | Claude, dashboard |
-| `anchor_path` | path | bound anchor file | Claude, audit |
-| `anchor_version` | string | anchor version or variant label | Claude |
+| `anchor_path` | path/null | bound anchor file | Claude, audit |
+| `anchor_version` | string/null | anchor version or variant label | Claude |
 | `iteration_count` | integer | completed iteration count | Claude, judge |
 | `latest_result_ref` | ref/null | latest results ledger reference | Claude, dashboard |
 | `latest_analysis_ref` | ref/null | latest structured analysis artifact reference | Claude |

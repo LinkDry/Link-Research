@@ -34,8 +34,8 @@ Project State does not store:
 | `project_id` | id | stable project identity | all layers |
 | `phase` | enum | current top-level research phase | Claude, dashboard |
 | `project_status` | enum | current project condition | Claude, dashboard |
-| `active_idea_id` | id | currently primary idea | Claude |
-| `active_branch_id` | id | currently primary branch | Claude |
+| `active_idea_id` | id/null | currently primary idea, or `null` when none is selected | Claude |
+| `active_branch_id` | id/null | currently primary branch, or `null` when none is selected | Claude |
 | `current_run_id` | id/null | current active run if any | Claude, dashboard |
 | `next_action` | string | next recommended action | Claude, operator |
 | `decision_mode` | enum | how the next decision should be handled | Claude |

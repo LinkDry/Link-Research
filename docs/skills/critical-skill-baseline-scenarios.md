@@ -136,8 +136,9 @@ For every scenario, verify:
 - Starting state:
   - experiment has anchor, results, drift logs, and multiple verdicts.
 - Expected V2 behavior:
-  - create a project-local archive record
-  - update `experiment-memory.md` out of active mode
+  - create a project-local `archive-<experiment_id>.md` record
+  - move or snapshot attributable workspace artifacts into project archive space
+  - update `experiment-memory.md` and `decision-tree.md` out of active mode
   - add reusable lesson entries to global memory
   - keep `results.tsv` intact
 
@@ -160,7 +161,8 @@ For every scenario, verify:
   - delete too much and lose useful evidence.
 - Expected V2 behavior:
   - preserve or snapshot substantive artifacts
-  - delete only trivial files if policy explicitly allows it
+  - avoid automatic deletion of ambiguous files
+  - leave an explicit unresolved artifact list if ownership is unclear
   - never delete canonical ledgers or anchors
 
 ## `reflect`

@@ -3,7 +3,7 @@
 ## Active Line Snapshot
 | Field | Value |
 |------|-------|
-| experiment_id | exp-template |
+| experiment_id | null |
 | idea_id | null |
 | branch_id | null |
 | parent_branch_id | null |

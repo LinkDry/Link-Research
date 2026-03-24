@@ -23,11 +23,8 @@ Memory State does not store:
 ## Primary File Views
 
 - `memory/lessons-learned.md`
-- `memory/archive/`
-
-Future recommended view:
-
 - `memory/failure-library.md`
+- `memory/archive/`
 
 ## Subdomains
 
@@ -133,4 +130,3 @@ It should present:
 - meta-patterns
 
 It should reference project-local archives instead of duplicating their full detail.
-
