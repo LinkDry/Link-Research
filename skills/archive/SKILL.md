@@ -55,6 +55,7 @@ Do not use when:
 
 - `projects/<slug>/results.tsv`
 - `projects/<slug>/plans/<idea>/anchor.md`
+- `projects/<slug>/plans/<idea>/experiment-plan.md`
 - `projects/<slug>/review-state.json`
 - `projects/<slug>/workspace/dashboard-data.json`
 - any `_index.md`
