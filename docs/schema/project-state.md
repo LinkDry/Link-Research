@@ -106,6 +106,16 @@ Use `next_action` plus Experiment State `next_experiment_action: phase2-ready` t
 - `integrity-review`
 - `resource-review`
 
+## Decision Gate Rule
+
+When `decision_mode` is `human-gated`:
+
+- `decision_type` must be non-null
+- `decision_options_ref` must be non-null
+- `human_attention` must be `async-review` or `required-now`
+
+When no human-gated decision is active, `decision_type` and `decision_options_ref` may be `null`.
+
 ## Update Triggers
 
 Project State should be updated when:
@@ -116,6 +126,12 @@ Project State should be updated when:
 - a run starts or stops
 - a human-gated decision is entered or cleared
 - a critical blocker appears or clears
+
+## Current Run Pointer Rule
+
+While an active or paused run exists, `current_run_id` should match `projects/<slug>/review-state.json.run_id`.
+
+When no active or paused run remains, `current_run_id` should be `null`.
 
 ## View Design Rule
 

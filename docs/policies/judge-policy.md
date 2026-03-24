@@ -150,6 +150,7 @@ When `judge` recommends a split, promotion, or controlled stop:
 3. `STATE.md` exposes immediate operator posture through:
    - `decision_type`
    - `decision_options_ref`
+   - `human_attention`
 4. `review-state.json` may mirror those options only while an active run is paused
 
 ### Decision Tree Rule
@@ -161,6 +162,12 @@ It must not update `Active Branch Register` as if the new branch already exists 
 ### Decision Ref Rule
 
 If a branch, archive, or handoff decision is pending, `STATE.md.decision_options_ref` should point to the current `judge-report.json#decision-options`.
+
+If `judge` leaves the project in a `human-gated` posture, it must also set:
+
+- a non-null `decision_type`
+- a non-null `decision_options_ref`
+- `human_attention` to `async-review` or `required-now`
 
 ## Cross-Model Review Rule
 

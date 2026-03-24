@@ -223,8 +223,16 @@ For every scenario, verify:
   - no active run is in progress
 - Expected V2 behavior:
   - write a valid `review-state.json`
-  - execute only the approved Phase 1 sequence
+  - execute only the approved Phase 1 bootstrap or validation sequence
   - checkpoint after each state transition
+  - changed files:
+    - `projects/<slug>/review-state.json`
+    - `projects/<slug>/STATE.md`
+    - sub-skill-owned outputs for the executed approved step
+  - untouched files:
+    - `projects/<slug>/workspace/dashboard-data.json` as canonical state
+    - unrelated archive records
+    - unrelated memory files except through delegated skills such as `reflect`
 
 ### Scenario B: Human-Gated Branch Decision
 
@@ -236,6 +244,13 @@ For every scenario, verify:
   - pause cleanly
   - encode the decision request in `review-state.json`
   - avoid pretending the decision was resolved automatically
+  - changed files:
+    - `projects/<slug>/review-state.json`
+    - `projects/<slug>/STATE.md`
+  - untouched files:
+    - `projects/<slug>/experiment-memory.md` by `overnight` itself
+    - archive records
+    - `memory/*` by `overnight` itself
 
 ### Scenario C: Resume After Interruption
 
@@ -245,6 +260,28 @@ For every scenario, verify:
   - resume from the correct step
   - preserve completed-step history
   - re-run only the step that was left in progress if required
+  - changed files:
+    - `projects/<slug>/review-state.json`
+    - `projects/<slug>/STATE.md`
+  - untouched files:
+    - already completed step records except for safe metadata refresh
+    - canonical scientific state files except through the resumed sub-skill
+
+### Scenario D: Phase 2 Handoff
+
+- Starting state:
+  - the active experiment line is `phase2-ready`
+  - `STATE.md.phase` is still `phase1`
+- Expected V2 behavior:
+  - start a Phase 2 run
+  - flip `STATE.md.phase` to `phase2` only when that run actually begins
+  - delegate publication execution to `phase2-publish`
+  - changed files:
+    - `projects/<slug>/review-state.json`
+    - `projects/<slug>/STATE.md`
+  - untouched files:
+    - `projects/<slug>/experiment-memory.md` by `overnight` itself
+    - paper artifacts until the delegated publishing step creates them
 
 ## Exit Criteria Before Writing Any V2 Skill
 

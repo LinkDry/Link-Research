@@ -29,6 +29,10 @@ But it must not duplicate their full contents.
 
 `decision_options_ref` should point to the canonical decision artifact for the current unresolved choice, while `review-state.json` only mirrors that choice during an active paused run.
 
+`current_run_id` should point to the active `review-state.json.run_id` while a run is active or paused, and should be cleared when no active run remains.
+
+If `decision_mode` is `human-gated`, `decision_type` and `decision_options_ref` must be populated, and `human_attention` must not remain `none`.
+
 ## Target Layout
 
 ```md

@@ -43,6 +43,7 @@ When a scientific decision is paused for review, this file may mirror the curren
   "human_attention": "none",
   "blocking_reason": null,
   "decision_type": null,
+  "decision_options_ref": null,
   "decision_options": [],
   "artifacts": [],
   "errors": [],
@@ -87,6 +88,7 @@ When a scientific decision is paused for review, this file may mirror the curren
 - `finished_at`
 - `blocking_reason`
 - `decision_type`
+- `decision_options_ref`
 - `decision_options`
 - `artifacts`
 - `summary`
@@ -120,16 +122,26 @@ Each step object should contain:
 - `output_ref`
 - `notes`
 
+The orchestrator may append new step objects as the next approved action becomes concrete.
+
+It should not rewrite completed steps into a different history after the fact.
+
 ## State Rules
 
 1. Only one `steps[]` entry may be `in-progress`.
 2. If `status` is `waiting-human`, then:
    - `decision_type` must be non-null
+   - `decision_options_ref` must be non-null
    - `decision_options` must not be empty
    - `human_attention` must be `required-now` or `async-review`
-3. If `status` is `completed`, `failed`, or `cancelled`, then `finished_at` must be set.
-4. `updated_at` must change on every meaningful run-state transition.
-5. This file must remain valid JSON with no comments.
+3. If `status` is `waiting-human`, `decision_options` should mirror the current canonical decision posture rather than invent a second source of truth.
+4. If `status` is `completed`, `failed`, or `cancelled`, then `finished_at` must be set.
+5. `updated_at` must change on every meaningful run-state transition.
+6. This file must remain valid JSON with no comments.
+
+## Current Run Pointer Rule
+
+While the run remains active or paused, `STATE.md.current_run_id` should match `review-state.json.run_id`.
 
 ## Content That Does Not Belong Here
 
@@ -143,6 +155,7 @@ Each step object should contain:
 Update `review-state.json` when:
 
 - a run starts
+- the next approved step is appended
 - a step changes status
 - a pause or resume occurs
 - a human decision is requested or resolved

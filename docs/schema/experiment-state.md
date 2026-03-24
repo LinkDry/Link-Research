@@ -107,7 +107,6 @@ Experiment State does not store:
 - `rerun`
 - `tweak-mutable-vars`
 - `branch`
-- `rethink`
 - `archive`
 - `phase2-ready`
 - `wait-human`
@@ -127,7 +126,6 @@ After 3 consecutive non-pass verdicts on the same branch, `next_experiment_actio
 At that point the next action must move to one of:
 
 - `branch`
-- `rethink`
 - `archive`
 - `wait-human`
 

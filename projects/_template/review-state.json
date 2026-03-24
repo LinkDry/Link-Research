@@ -15,6 +15,7 @@
   "human_attention": "none",
   "blocking_reason": null,
   "decision_type": null,
+  "decision_options_ref": null,
   "decision_options": [],
   "artifacts": [],
   "errors": [],

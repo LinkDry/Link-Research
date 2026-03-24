@@ -159,7 +159,7 @@ Map verdict to next action conservatively:
 
 - `pass` -> `phase2-ready`
 - `tweak` -> `tweak-mutable-vars`
-- `rethink` -> `rethink`, `branch`, or `wait-human`
+- `rethink` -> `branch` or `wait-human`
 - `archive` -> `archive`
 
 Use `project-brief.md` plus branch-cap data from `decision-tree.md` to decide whether the next step is:
@@ -245,7 +245,7 @@ Use these patterns:
   - keep `phase: phase1`
   - `project_status: running`
   - `decision_mode: auto-report`
-  - `human_attention: none`
+  - `human_attention: async-review` only if a genuine non-blocking handoff choice is pending; otherwise `none`
   - `decision_type: phase2-handoff` only if a handoff choice is genuinely pending; otherwise clear it
   - set `decision_options_ref` only when such a handoff choice exists; otherwise clear it
   - `next_action: start the approved Phase 2 workflow for the validated line`
@@ -256,12 +256,14 @@ Use these patterns:
   - clear `decision_type` and `decision_options_ref`
   - `next_action: run the next bounded tweak iteration`
 - `rethink`
-  - if autonomous bounded branching is justified, keep `project_status: running` and `decision_mode: auto-report`
-  - if human review is required, use `project_status: waiting-human`, `decision_mode: human-gated`, and populate `decision_type: branch-decision`
+  - if autonomous bounded branching is justified, keep `project_status: running`, `decision_mode: auto-report`, `human_attention: none`, and clear `decision_type` plus `decision_options_ref`
+  - `next_action: create the next bounded branch plan for the current line`
+  - if human review is required, use `project_status: waiting-human`, `decision_mode: human-gated`, `human_attention: required-now`, and populate `decision_type: branch-decision`
+  - `next_action: review branch options for the current line`
   - set `decision_options_ref` to `judge-report.json#decision-options` when options exist
 - `archive`
-  - if the archive decision is clear, use `project_status: running` and `decision_mode: auto-report` with `next_action: run archive for the current line`
-  - if archive needs operator confirmation, use `project_status: waiting-human`, `decision_mode: human-gated`, `decision_type: archive-review`, and set `decision_options_ref` to `judge-report.json#decision-options`
+  - if the archive decision is clear, use `project_status: running`, `decision_mode: auto-report`, `human_attention: none`, clear `decision_type` plus `decision_options_ref`, and set `next_action: run archive for the current line`
+  - if archive needs operator confirmation, use `project_status: waiting-human`, `decision_mode: human-gated`, `human_attention: required-now`, `decision_type: archive-review`, `next_action: review archive decision for the current line`, and set `decision_options_ref` to `judge-report.json#decision-options`
 
 Always update:
 
