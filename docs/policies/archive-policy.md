@@ -36,6 +36,10 @@ Archive must never rewrite or delete:
 - `projects/<slug>/plans/<idea>/anchor.md`
 - canonical result or verdict refs already recorded in active state
 
+If the current idea-scoped `anchor.md` or `experiment-plan.md` slot may later be reused, archive
+should snapshot those files into `projects/<slug>/archive/artifacts/<experiment_id>/` and point the
+archive record at the stable archived copies rather than the live slot paths.
+
 ### Project-Local Case Record
 
 Archive must create:

@@ -42,11 +42,17 @@ Check that:
 - `review-state.json` no longer looks like an active resumable run
 - archive template ref fields do not point at fake template anchors
 - canonical artifact examples live at runtime-shaped paths
+- archive examples use stable archived anchor or plan refs when live idea-scoped slots may later be reused
 - `judge-report` examples reflect the current Phase 2 handoff semantics
 
 **Step 3: Keep old flat template artifacts removed**
 
 Do not reintroduce flat `_template-*` artifact files once the canonical-path examples exist.
+
+**Step 4: Stabilize historical archive refs**
+
+Document and template the rule that archive records should prefer stable archived copies of
+`anchor.md` and `experiment-plan.md` when the live idea-scoped slots may later be reused.
 
 ### Task 2: Tighten Drift And Overnight Routing Around Judge Entry
 

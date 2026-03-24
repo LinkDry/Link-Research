@@ -119,6 +119,8 @@ The record must include:
 - memory-promotion refs once written
 
 Prefer summaries plus refs over copying whole ledgers or whole anchor contents.
+If the current idea-scoped `anchor.md` or `experiment-plan.md` slot may later be reused, point the
+archive record to stable snapshot copies inside the archive artifact bundle instead of the live path.
 
 ### 4. Preserve Workspace Artifacts Safely
 
@@ -130,6 +132,12 @@ For files confidently attributable to the archived line:
 
 - move them into the archive artifact bundle
 - or snapshot them if moving is risky or would destroy useful directory context
+
+For the line's bound `anchor.md` and editable `experiment-plan.md`:
+
+- keep the live canonical files untouched
+- snapshot them into the artifact bundle when future slot reuse would make the live path historically ambiguous
+- use those stable archived copies in `archive-<experiment_id>.md` when snapshots were taken
 
 For files with ambiguous ownership:
 
