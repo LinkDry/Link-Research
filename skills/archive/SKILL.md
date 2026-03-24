@@ -34,6 +34,7 @@ Do not use when:
 - `projects/<slug>/results.tsv`
 - `projects/<slug>/decision-tree.md`
 - `projects/<slug>/plans/<idea>/anchor.md` when present
+- `projects/<slug>/plans/<idea>/experiment-plan.md` when present
 - `analysis-report.json` and `judge-report.json` through canonical refs when present
 - attributable files under `projects/<slug>/workspace/`
 - `memory/lessons-learned.md`
@@ -91,6 +92,7 @@ Stop if more than one plausible line fits and no explicit target is available.
 Read the closure bundle for the target line:
 
 - anchor path and anchor version when present
+- experiment plan when present and still attributable to the archived line
 - relevant `results.tsv` rows
 - referenced `analysis-report.json`
 - referenced `judge-report.json`
@@ -256,6 +258,7 @@ When stopping, report the exact ambiguity or contract conflict.
 - [ ] Archived one experiment line, not a vague idea blob
 - [ ] Wrote `archive-<experiment_id>.md` with refs and failure analysis
 - [ ] Preserved attributable workspace artifacts by move or snapshot
+- [ ] Snapshotted live idea-scoped anchor or plan files when future slot reuse would otherwise make archive refs ambiguous
 - [ ] Did not auto-delete ambiguous files
 - [ ] Left `results.tsv` and anchors untouched
 - [ ] Updated `experiment-memory.md` and `decision-tree.md` consistently
