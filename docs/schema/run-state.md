@@ -60,7 +60,7 @@ Run State does not store:
 | `finished_at` | timestamp/null | finish time when closed |
 | `blocking_reason` | string/null | current blocking reason |
 | `decision_type` | enum/null | current decision type |
-| `decision_options` | array | structured options for operator review |
+| `decision_options` | array | structured options mirrored for operator review while the run is paused |
 | `artifacts` | array | run-generated artifact refs |
 | `summary` | string/null | compact run summary |
 
@@ -106,6 +106,14 @@ Run State does not store:
 - `async-review`
 - `required-now`
 
+### `decision_type`
+
+- `branch-decision`
+- `phase2-handoff`
+- `archive-review`
+- `integrity-review`
+- `resource-review`
+
 ## Step Structure
 
 Each `steps[]` entry should contain:
@@ -128,9 +136,14 @@ A run is resumable only if:
 - completed steps are clearly marked
 - any in-progress step can be safely re-run
 
+## Decision Mirror Rule
+
+If a run is waiting on a human decision, `decision_options` may mirror the active canonical options referenced by `STATE.md.decision_options_ref`.
+
+Run State does not own branch-governance history or verdict rationale; it only carries the execution-time pause state.
+
 ## View Design Rule
 
 `review-state.json` should remain machine-oriented and compactly parseable.
 
 Do not replace structured fields with long freeform text.
-

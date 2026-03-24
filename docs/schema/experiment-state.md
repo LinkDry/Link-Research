@@ -57,6 +57,7 @@ Experiment State does not store:
 |------|------|-------------|
 | `parent_branch_id` | id/null | parent branch when forked |
 | `judge_confidence` | enum/null | confidence attached to latest judge verdict |
+| `latest_judge_report_ref` | ref/null | pointer to the structured judge rationale artifact |
 | `notes_ref` | ref/null | pointer to extra diagnostic notes |
 
 ## Enums
@@ -86,6 +87,12 @@ Experiment State does not store:
 - `rethink`
 - `archive`
 
+### `judge_confidence`
+
+- `low`
+- `medium`
+- `high`
+
 ### `success_criteria_status`
 
 - `met`
@@ -105,6 +112,25 @@ Experiment State does not store:
 - `phase2-ready`
 - `wait-human`
 
+## Phase 2 Handoff Rule
+
+`phase2-ready` means the active experiment line has cleared the Phase 1 validation gate and is ready to hand off into Phase 2.
+
+It does not, by itself, mean the project has already entered `phase2`.
+
+The actual `STATE.md.phase` transition happens only when the Phase 2 orchestrator or publishing workflow starts.
+
+## Forced-Stop Rule
+
+After 3 consecutive non-pass verdicts on the same branch, `next_experiment_action` must not remain a same-line tweak or rerun posture.
+
+At that point the next action must move to one of:
+
+- `branch`
+- `rethink`
+- `archive`
+- `wait-human`
+
 ## Evidence Rule
 
 No meaningful verdict should exist without a traceable evidence path:
@@ -112,6 +138,8 @@ No meaningful verdict should exist without a traceable evidence path:
 - `anchor_path`
 - `latest_result_ref`
 - `latest_analysis_ref`
+
+For judged lines, `latest_judge_report_ref` should point to the structured verdict artifact that explains why the verdict was chosen.
 
 ## View Design Rule
 

@@ -27,6 +27,8 @@ It may reference:
 
 But it must not duplicate their full contents.
 
+`decision_options_ref` should point to the canonical decision artifact for the current unresolved choice, while `review-state.json` only mirrors that choice during an active paused run.
+
 ## Target Layout
 
 ```md
@@ -112,3 +114,5 @@ Update `STATE.md` when:
 - next action changes
 - human attention state changes
 - blockers or risk level change
+
+Keep `phase: phase1` after a Phase 1 PASS until a Phase 2 workflow actually begins.

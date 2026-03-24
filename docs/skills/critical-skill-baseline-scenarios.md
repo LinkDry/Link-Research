@@ -103,7 +103,9 @@ For every scenario, verify:
   - no major confounder is present
 - Expected V2 behavior:
   - write a `pass` verdict to `experiment-memory.md`
-  - update `STATE.md` to indicate Phase 2 readiness
+  - attach a structured `judge-report.json` through `latest_judge_report_ref`
+  - set `next_experiment_action: phase2-ready`
+  - keep `STATE.md.phase` at `phase1` until Phase 2 actually starts
   - preserve `results.tsv` and anchor file unchanged
 
 ### Scenario B: Drift Not Resolved
@@ -122,8 +124,9 @@ For every scenario, verify:
 - Starting state:
   - experiment history shows repeated non-pass outcomes.
 - Expected V2 behavior:
-  - apply one clearly documented forced-stop policy
-  - recommend archive or human review according to the unified rule
+  - apply the unified forced-stop policy after 3 consecutive non-pass verdicts on the same branch
+  - refuse to emit a fourth same-branch `tweak`
+  - emit `rethink` or `archive` according to the documented policy
   - update branch governance state consistently
 
 ## `archive`

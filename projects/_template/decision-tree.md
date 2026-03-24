@@ -17,6 +17,8 @@
 |-------------|------|----------------|----------|--------------------|---------------|---------------|------------|
 | - | - | - | - | - | - | - | - |
 
+`rationale_ref` should point to the supporting decision artifact, normally the relevant `judge-report.json` or archive record.
+
 ## Branch Outcomes
 | branch_id | branch_type | final_status | promoted_to | archive_ref | notes |
 |-----------|-------------|--------------|-------------|-------------|-------|

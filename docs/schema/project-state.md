@@ -52,7 +52,7 @@ Project State does not store:
 | `project_title` | string | human-readable project title |
 | `active_paper_id` | id/null | current paper object in phase 2 |
 | `decision_type` | enum/null | current decision category |
-| `decision_options_ref` | ref/null | pointer to detailed decision options |
+| `decision_options_ref` | ref/null | pointer to the canonical decision artifact that holds detailed options |
 
 ## Enums
 
@@ -63,6 +63,12 @@ Project State does not store:
 - `phase2`
 - `paused`
 - `archived`
+
+## Phase Transition Rule
+
+Project State remains in `phase1` after a Phase 1 PASS until a Phase 2 workflow actually starts.
+
+Use `next_action` plus Experiment State `next_experiment_action: phase2-ready` to express readiness before the transition happens.
 
 ### `project_status`
 
@@ -91,6 +97,14 @@ Project State does not store:
 - `medium`
 - `high`
 - `critical`
+
+### `decision_type`
+
+- `branch-decision`
+- `phase2-handoff`
+- `archive-review`
+- `integrity-review`
+- `resource-review`
 
 ## Update Triggers
 

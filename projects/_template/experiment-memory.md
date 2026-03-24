@@ -16,6 +16,8 @@
 | latest_drift_score | null |
 | latest_drift_decision | null |
 | latest_judge_verdict | null |
+| judge_confidence | null |
+| latest_judge_report_ref | null |
 | success_criteria_status | unknown |
 | archive_recommended | false |
 | human_review_required | false |

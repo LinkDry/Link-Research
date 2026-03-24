@@ -49,6 +49,8 @@ Raw result detail stays in `results.tsv` and linked artifacts.
 | latest_drift_score | |
 | latest_drift_decision | |
 | latest_judge_verdict | |
+| judge_confidence | |
+| latest_judge_report_ref | |
 | success_criteria_status | |
 | archive_recommended | |
 | human_review_required | |
@@ -98,6 +100,8 @@ The `Active Line Snapshot` section should directly mirror these Experiment State
 - `latest_drift_score`
 - `latest_drift_decision`
 - `latest_judge_verdict`
+- `judge_confidence`
+- `latest_judge_report_ref`
 - `success_criteria_status`
 - `archive_recommended`
 - `human_review_required`
@@ -153,4 +157,5 @@ Update `experiment-memory.md` when:
 - analysis completes
 - drift status changes
 - judge verdict changes
+- judge report ref changes
 - a branch is merged, abandoned, or archived

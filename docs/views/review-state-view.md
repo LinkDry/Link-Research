@@ -21,6 +21,8 @@ If a run exists, this file should be sufficient to answer:
 - whether it can resume
 - whether a human decision is pending
 
+When a scientific decision is paused for review, this file may mirror the current option set, but it is not the canonical owner of branch-governance history or verdict rationale.
+
 ## Target JSON Skeleton
 
 ```json
@@ -100,6 +102,8 @@ When `status` is `waiting-human`, each decision option should contain:
 - `cons`
 - `recommended`
 - `expected_effect`
+
+Prefer mirroring these options from the canonical decision artifact referenced by `STATE.md.decision_options_ref` when such an artifact exists.
 
 This keeps human escalation structured instead of burying the choice inside prose.
 

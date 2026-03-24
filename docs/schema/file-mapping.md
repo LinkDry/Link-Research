@@ -79,6 +79,7 @@ Rules:
 | `projects/<slug>/plans/<idea>/experiment-plan.md` | secondary planning input | planning input for Experiment State | editable pre-anchor experiment design | overwrite until anchor lock or explicit revision |
 | `projects/<slug>/workspace/results/<result-group-id>/analysis-report.json` | secondary evidence view | Experiment State | structured interpretation of one result group | overwrite per result group artifact |
 | `projects/<slug>/workspace/results/<result-group-id>/config-snapshot.json` | secondary evidence view | Experiment State | machine-comparable record of what actually ran | write once per result group artifact |
+| `projects/<slug>/workspace/reviews/<experiment_id>/judge-report-<iteration>.json` | secondary evidence view | Experiment State | structured verdict rationale and decision options for one judged iteration | overwrite per judged iteration artifact |
 | `projects/<slug>/decision-tree.md` | secondary evidence view | Experiment State | branch governance history | append and summarize |
 | `memory/archive/*.md` | historical archive | Memory State | compacted global lesson history | append and rotate |
 | `projects/<slug>/archive/*.md` | historical archive | Experiment State | completed branch or experiment case record | append new archive record |
@@ -134,6 +135,13 @@ Rules:
 - owns the structured interpretation of one result group
 - must point back to concrete results rows or result groups
 - must not replace canonical steering state
+
+### `judge-report.json`
+
+- owns the structured rationale for one judge decision
+- may contain branch or stop options that are still pending
+- must not replace canonical verdict state in `experiment-memory.md`
+- must not replace canonical steering posture in `STATE.md`
 
 ### `config-snapshot.json`
 
