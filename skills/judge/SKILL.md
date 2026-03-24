@@ -111,6 +111,7 @@ Read the locked anchor from `anchor_path` and inspect:
 - `locked_invariants`
 - `red_lines`
 - `disconfirming_signals`
+- `archive_if_true`
 
 Then inspect the current evidence bundle:
 
@@ -133,6 +134,7 @@ Determine:
 - trend posture across iterations on the same branch
 - whether evidence status or anomalies introduce material confounders
 - whether the current setup still tests the locked claim rather than a softened version
+- whether any `archive_if_true` stop condition is met by current evidence
 - whether the evidence is trustworthy enough for a high-confidence verdict
 
 Derive `judge_confidence` as:
@@ -154,6 +156,7 @@ Rules:
 - after 3 consecutive non-pass verdicts on the same branch, do not emit another same-line `tweak`
 - when the current line should stop iterating directly but a bounded variant still exists, choose `rethink`
 - when the line is no longer scientifically justified, choose `archive`
+- if any `archive_if_true` condition from the bound anchor is clearly met by current evidence, do not choose `pass` or `tweak`; choose `archive`, or use human review only when the stop evidence itself is materially ambiguous
 
 Map verdict to next action conservatively:
 
@@ -168,6 +171,8 @@ Use `project-brief.md` plus branch-cap data from `decision-tree.md` to decide wh
 - or `human-gated`
 
 Human gating is required when the next move is strategic, irreversible, ethics-sensitive, branch-cap constrained, or materially ambiguous.
+Human gating is also required when the next branch plan or future anchor destination is ambiguous under the current idea-scoped path contract.
+Under the current file mapping, `projects/<slug>/plans/<idea>/experiment-plan.md` and `anchor.md` behave as a single active branch slot per `idea_id`, so same-idea sibling branch activation should be treated as human-gated unless that slot is being safely repurposed after the prior line is closed or superseded.
 
 ### 6. Optional Cross-Model Review
 
@@ -205,7 +210,7 @@ Populate it using the documented schema:
 - decision options when applicable
 - cross-model review block
 
-If a branch or archive decision is pending, store the detailed options here.
+If a branch, archive, or Phase 2 handoff decision is pending, store the detailed options here.
 
 ### 8. Update Experiment State
 
@@ -242,13 +247,8 @@ Update `STATE.md` through canonical steering fields only.
 Use these patterns:
 
 - `pass`
-  - keep `phase: phase1`
-  - `project_status: running`
-  - `decision_mode: auto-report`
-  - `human_attention: async-review` only if a genuine non-blocking handoff choice is pending; otherwise `none`
-  - `decision_type: phase2-handoff` only if a handoff choice is genuinely pending; otherwise clear it
-  - set `decision_options_ref` only when such a handoff choice exists; otherwise clear it
-  - `next_action: start the approved Phase 2 workflow for the validated line`
+  - if no human handoff choice remains, keep `phase: phase1`, set `project_status: running`, `decision_mode: auto-report`, `human_attention: none`, clear `decision_type` plus `decision_options_ref`, and set `next_action: start the approved Phase 2 workflow for the validated line`
+  - if a real Phase 2 handoff choice is pending, keep `phase: phase1`, set `project_status: waiting-human`, `decision_mode: human-gated`, `human_attention: async-review` or `required-now`, set `decision_type: phase2-handoff`, set `decision_options_ref` to `judge-report.json#decision-options`, and set `next_action: review the Phase 2 handoff options before starting the workflow`
 - `tweak`
   - `project_status: running`
   - `decision_mode: auto-report`
@@ -256,11 +256,8 @@ Use these patterns:
   - clear `decision_type` and `decision_options_ref`
   - `next_action: run the next bounded tweak iteration`
 - `rethink`
-  - if autonomous bounded branching is justified, keep `project_status: running`, `decision_mode: auto-report`, `human_attention: none`, and clear `decision_type` plus `decision_options_ref`
-  - `next_action: create the next bounded branch plan for the current line`
-  - if human review is required, use `project_status: waiting-human`, `decision_mode: human-gated`, `human_attention: required-now`, and populate `decision_type: branch-decision`
-  - `next_action: review branch options for the current line`
-  - set `decision_options_ref` to `judge-report.json#decision-options` when options exist
+  - use autonomous `branch` only when the next branch plan and future anchor destination are unambiguous under the current path contract and the current idea-scoped plan or anchor slot can be safely reused; in that case keep `project_status: running`, `decision_mode: auto-report`, `human_attention: none`, clear `decision_type` plus `decision_options_ref`, and set `next_action: create the next bounded branch plan for the current line`
+  - if human review is required or the path contract is ambiguous, use `project_status: waiting-human`, `decision_mode: human-gated`, `human_attention: async-review` or `required-now`, populate `decision_type: branch-decision`, set `decision_options_ref` to `judge-report.json#decision-options`, and set `next_action: review branch options for the current line`
 - `archive`
   - if the archive decision is clear, use `project_status: running`, `decision_mode: auto-report`, `human_attention: none`, clear `decision_type` plus `decision_options_ref`, and set `next_action: run archive for the current line`
   - if archive needs operator confirmation, use `project_status: waiting-human`, `decision_mode: human-gated`, `human_attention: required-now`, `decision_type: archive-review`, `next_action: review archive decision for the current line`, and set `decision_options_ref` to `judge-report.json#decision-options`
@@ -304,6 +301,8 @@ When stopping, report the exact missing contract or evidence path.
 - [ ] Wrote only `judge-report.json`, `experiment-memory.md`, `STATE.md`, and `decision-tree.md` when governance changed
 - [ ] Refused to issue a normal verdict when drift was unresolved
 - [ ] Used the unified forced-stop policy and refused a fourth same-branch `tweak`
+- [ ] Treated `archive_if_true` as a real forced-stop signal rather than a soft suggestion
 - [ ] Kept PASS as `phase2-ready` without flipping `STATE.md.phase` to `phase2`
+- [ ] Used `phase2-handoff` only for a real human-gated publication choice
 - [ ] Stored detailed rationale and decision options in `judge-report.json`
 - [ ] Treated cross-model review as advisory only

@@ -46,29 +46,40 @@ Instead:
   "latest_result_ref": "results.tsv#rg-003",
   "latest_analysis_ref": "projects/demo/workspace/results/rg-003/analysis-report.json",
   "drift_gate_status": "consistent",
-  "success_criteria_status": "near-miss",
-  "verdict": "tweak",
-  "verdict_confidence": "medium",
-  "next_experiment_action": "tweak-mutable-vars",
+  "success_criteria_status": "met",
+  "verdict": "pass",
+  "verdict_confidence": "high",
+  "next_experiment_action": "phase2-ready",
   "archive_recommended": false,
   "rationale_summary": [
-    "The latest run improved over the previous iteration but remains below target by 6%."
+    "The latest run clears the locked success criteria while preserving the anchored claim."
   ],
-  "confounders": [
-    "Only one random seed was evaluated."
-  ],
-  "root_causes": [
-    "Current prompt budget may be too small for the proposed mechanism."
-  ],
+  "confounders": [],
+  "root_causes": [],
   "suggested_actions": [
     {
       "action_id": "act-001",
-      "action_type": "tweak",
-      "summary": "Increase retrieval depth while keeping the anchor fixed.",
-      "expected_effect": "May improve recall without changing the claim."
+      "action_type": "phase2-handoff",
+      "summary": "Start the conservative Phase 2 paper path around the validated mainline claim.",
+      "expected_effect": "Begins writing without expanding scope beyond validated evidence."
     }
   ],
-  "decision_options": [],
+  "decision_options": [
+    {
+      "option_id": "handoff-001",
+      "label": "Start conservative Phase 2 drafting",
+      "summary": "Write the paper around the validated mainline claim only.",
+      "pros": [
+        "Lowest overclaim risk",
+        "Fastest path into a reviewable draft"
+      ],
+      "cons": [
+        "Leaves broader framing ideas for later work"
+      ],
+      "recommended": true,
+      "expected_effect": "Preserves the cleanest evidence-to-claim alignment during handoff."
+    }
+  ],
   "cross_model_review": {
     "used": false,
     "status": "skipped",
@@ -105,7 +116,7 @@ Instead:
 
 ## `decision_options[]` Structure
 
-Use when the verdict creates an immediate branch, stop, or human-gated decision.
+Use when the verdict creates an immediate branch, stop, or human-gated decision, including a `phase2-handoff`.
 
 Each option should contain:
 
@@ -121,9 +132,10 @@ Each option should contain:
 
 1. `verdict` must match the canonical verdict written to `experiment-memory.md`.
 2. `next_experiment_action` must match the canonical next action in `experiment-memory.md`.
-3. If branch creation is only a recommendation, record it in `decision_options` and `decision-tree.md`; do not pretend the branch already exists.
-4. `cross_model_review` is advisory only and must not contradict canonical state silently.
-5. This file must remain machine-parseable JSON.
+3. If a PASS still requires a human-gated publication choice, keep `next_experiment_action: phase2-ready` and store the handoff options in `decision_options`.
+4. If branch creation is only a recommendation, record it in `decision_options` and `decision-tree.md`; do not pretend the branch already exists.
+5. `cross_model_review` is advisory only and must not contradict canonical state silently.
+6. This file must remain machine-parseable JSON.
 
 ## Content That Does Not Belong Here
 

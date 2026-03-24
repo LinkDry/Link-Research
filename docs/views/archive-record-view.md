@@ -19,7 +19,7 @@ This archive record is historical context, not active state.
 It should point back to:
 
 - `results.tsv`
-- `anchor.md`
+- `anchor.md` or a stable archived snapshot of it
 - `analysis-report.json`
 - `judge-report.json`
 - `decision-tree.md`
@@ -85,3 +85,5 @@ It should point back to:
 3. `artifact_bundle_path` should resolve to the preserved archive artifact directory when one exists.
 4. `Workspace Preservation` must record unresolved or ambiguous files instead of hiding them.
 5. This file must remain human-readable and structurally consistent enough for later extraction.
+6. `lesson_ref` and `failure_library_ref` should point to concrete inserted memory row refs or stable IDs, not dangling template anchors.
+7. When live idea-scoped `anchor.md` or `experiment-plan.md` files may later be reused, `anchor_path` and `plan_ref` should resolve to archived snapshot copies inside the artifact bundle.

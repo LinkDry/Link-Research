@@ -38,6 +38,7 @@ Use only when:
 - success criteria are met
 - no unresolved material confounder invalidates the conclusion
 - the active evidence still matches the locked anchor
+- no `archive_if_true` stop condition from the bound anchor is met by current evidence
 
 ### `tweak`
 
@@ -64,6 +65,7 @@ Use when:
 
 - the claim is contradicted strongly enough that no bounded next line is justified
 - a red line or impossibility condition is reached
+- an `archive_if_true` condition from the bound anchor is met by current evidence
 - the branch has hit the forced-stop ceiling and no viable branch-worthy alternative remains
 
 ## Unified Forced-Stop Policy
@@ -101,18 +103,32 @@ Choose `rethink` with `next_experiment_action: branch` only when:
 - there is a concrete bounded alternative hypothesis or design variant
 - branch count remains under the configured limit
 - the move is not strategic, irreversible, or otherwise listed in `project-brief.md` escalation conditions
+- the next branch plan and future anchor destination are unambiguous under the current path contract
 
 Choose `rethink` with `next_experiment_action: wait-human` when:
 
 - the best next step is strategic or costly
 - branch-cap pressure is present
 - model disagreement or evidence ambiguity makes autonomous branching unsafe
+- the next branch would require ambiguous reuse of current idea-scoped plan or anchor artifacts
 
 Choose `archive` when:
 
 - the evidence contradicts the anchor strongly
 - performance is stagnant or degrading with no bounded alternative
 - a red line or impossibility signal applies
+- a locked `archive_if_true` condition has clearly fired
+
+### Current Branch Slot Rule
+
+V2 state is branch-aware, but the canonical `experiment-plan.md` and `anchor.md` files are still
+idea-scoped paths.
+
+Until branch-scoped plan and anchor paths exist, those files should be treated as a single active
+branch slot per `idea_id`.
+
+That means `judge` may recommend a new branch, but it must not leave an autonomous `branch` posture
+when creating the next same-idea branch would require ambiguous reuse of the current slot.
 
 ## Phase 2 Readiness Contract
 
@@ -130,10 +146,25 @@ In `experiment-memory.md`:
 
 In `STATE.md`:
 
-- keep `phase: phase1`
-- set `project_status: running`
-- set `next_action` to begin Phase 2 planning or publishing workflow
-- clear any stale decision gate if no immediate human choice is required
+Use exactly one of these steering postures:
+
+- non-blocking Phase 2 handoff
+  - keep `phase: phase1`
+  - set `project_status: running`
+  - set `decision_mode: auto-report`
+  - set `human_attention: none`
+  - clear `decision_type` and `decision_options_ref`
+  - set `next_action` to begin the approved Phase 2 planning or publishing workflow
+- human-gated Phase 2 handoff
+  - keep `phase: phase1`
+  - set `project_status: waiting-human`
+  - set `decision_mode: human-gated`
+  - set `human_attention` to `async-review` or `required-now`
+  - set `decision_type: phase2-handoff`
+  - set `decision_options_ref` to the current `judge-report.json#decision-options`
+  - set `next_action` to review the Phase 2 handoff options before starting the workflow
+
+In both cases, `experiment-memory.md` still records `next_experiment_action: phase2-ready`.
 
 ### Phase Transition Rule
 

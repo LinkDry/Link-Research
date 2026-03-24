@@ -91,6 +91,7 @@ Confirm the anchor contains:
 - `locked_invariants`
 - `red_lines`
 - `disconfirming_signals`
+- `archive_if_true`
 
 Stop if the anchor is incomplete. Report the exact missing section.
 
@@ -121,6 +122,7 @@ Rules:
 
 - if any locked invariant changed, force `anchor-violation`
 - if any red line is triggered by current evidence, force `red-line`
+- if any `archive_if_true` condition is triggered by current evidence, force `red-line`
 - otherwise, compute a conservative overall score from the three dimensions
 
 ### 5. Choose Exactly One Drift Decision
@@ -167,9 +169,9 @@ Append one row to `Drift and Judge Log` with:
 
 Recommended next actions:
 
-- `consistent` -> `wait-human` only if a separate strategic decision is pending; otherwise move toward judgment
+- `consistent` -> `wait-human` only if a separate strategic decision is pending; otherwise `judge-ready`
 - `drift-detected` -> `wait-human`
-- `anchor-violation` -> `rethink` or `branch`
+- `anchor-violation` -> `wait-human`
 - `red-line` -> `archive`
 
 ### 7. Update Project Steering State
@@ -180,6 +182,8 @@ Update `STATE.md` through canonical steering fields only:
 - `next_action`
 - `decision_mode`
 - `human_attention`
+- `decision_type`
+- `decision_options_ref`
 - `risk_level`
 - `last_completed_skill`
 - `last_updated`
@@ -190,21 +194,25 @@ Recommended posture:
   - `project_status: running`
   - `decision_mode: auto-report`
   - `human_attention: none`
+  - clear `decision_type` and `decision_options_ref`
   - `next_action: proceed to judge`
 - `drift-detected`
-  - `project_status: waiting-human`
-  - `decision_mode: human-gated`
+  - `project_status: blocked`
+  - `decision_mode: auto-report`
   - `human_attention: async-review`
+  - clear `decision_type` and `decision_options_ref`
   - `next_action: review drift and decide whether to correct or pivot`
 - `anchor-violation`
-  - `project_status: waiting-human`
-  - `decision_mode: human-gated`
+  - `project_status: blocked`
+  - `decision_mode: auto-report`
   - `human_attention: required-now`
-  - `next_action: revert invariant change, branch, or approve a new anchor path`
+  - clear `decision_type` and `decision_options_ref`
+  - `next_action: inspect invariant violation and decide whether to revert, branch, or approve a new anchor path`
 - `red-line`
-  - `project_status: waiting-human`
-  - `decision_mode: human-gated`
+  - `project_status: blocked`
+  - `decision_mode: auto-report`
   - `human_attention: required-now`
+  - clear `decision_type` and `decision_options_ref`
   - `next_action: review forced stop and likely archive`
 
 ## Optional Cross-Model Review

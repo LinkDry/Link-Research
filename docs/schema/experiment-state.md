@@ -29,6 +29,17 @@ Experiment State does not store:
 - `projects/<slug>/plans/<idea>/anchor.md` - immutable hypothesis evidence
 - `projects/<slug>/decision-tree.md` - branch comparison context
 
+## Current Branch Slot Rule
+
+Experiment State is branch-aware, but the canonical `experiment-plan.md` and `anchor.md` paths are
+still idea-scoped today.
+
+Until V2 introduces branch-scoped paths, those files should be treated as a single active branch
+slot per `idea_id`.
+
+That means same-idea sibling branch activation must move through an explicit governance decision
+unless the existing slot is being safely repurposed after the prior line is closed or superseded.
+
 ## Required Fields
 
 | Field | Type | Description | Primary Consumer |
@@ -106,6 +117,7 @@ Experiment State does not store:
 - `run-first-experiment`
 - `rerun`
 - `tweak-mutable-vars`
+- `judge-ready`
 - `branch`
 - `archive`
 - `phase2-ready`
@@ -116,6 +128,8 @@ Experiment State does not store:
 `phase2-ready` means the active experiment line has cleared the Phase 1 validation gate and is ready to hand off into Phase 2.
 
 It does not, by itself, mean the project has already entered `phase2`.
+
+`phase2-ready` may coexist with a human-gated `phase2-handoff` decision in `STATE.md` when the experiment has passed but the publication path still requires an explicit operator choice.
 
 The actual `STATE.md.phase` transition happens only when the Phase 2 orchestrator or publishing workflow starts.
 

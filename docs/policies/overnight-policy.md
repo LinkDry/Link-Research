@@ -110,8 +110,8 @@ Once an active experiment line exists, `overnight` should route one approved nex
 | active line has a concrete experiment plan but no bound anchor yet | `anchor-wrapper` | this covers both fresh setup and bounded branch continuation after `experiment-plan` |
 | `latest_result_ref` changed and the corresponding analysis is missing or stale | `analyze-results` | analysis must be regenerated before drift or judge |
 | analysis exists for the latest result and drift for that result is missing or stale | `drift-detector` | drift owns the integrity gate |
-| latest drift decision is `consistent` and the latest iteration is not yet judged | `judge` | judge owns verdict, next action, and human-gating posture |
-| judge leaves `next_experiment_action: branch` and the project remains auto or auto-report | `experiment-plan` | this starts the bounded branch handoff by creating the next branch plan before anchor lock |
+| latest drift decision is `consistent` and `next_experiment_action` is `judge-ready` | `judge` | judge owns verdict, next action, and human-gating posture |
+| judge leaves `next_experiment_action: branch` and the project remains auto or auto-report | `experiment-plan` | this starts the bounded branch handoff by creating the next branch plan before anchor lock, but only after judge has already confirmed the current idea-scoped plan slot is safe to reuse |
 | judge leaves `next_experiment_action: archive` and the project is not human-gated | `archive` | archive is the conservative closure path |
 | judge leaves `next_experiment_action: phase2-ready` | complete the Phase 1 run as handoff-ready | Phase 1 ends without flipping `STATE.md.phase` yet |
 
@@ -120,18 +120,17 @@ Once an active experiment line exists, `overnight` should route one approved nex
 `overnight` should continue automatically when all of these are true:
 
 - `STATE.md.decision_mode` is `auto` or `auto-report`
-- `STATE.md.human_attention` is not `required-now`
+- `STATE.md.human_attention` is `none`
 - the next step is already approved by policy
 - no sub-skill has opened a pending human decision
 
 This keeps automation strong for bounded reruns and conservative same-line iteration.
 
-## Human-Gated Rule
+## Human-Gated Decision Rule
 
 If canonical state shows:
 
 - `decision_mode: human-gated`
-- or `human_attention: required-now`
 
 then `overnight` must:
 
@@ -151,6 +150,20 @@ To write a contract-valid `waiting-human` state:
 If those conditions fail, do not write `waiting-human`.
 
 Instead, stop with a run-state contract error and keep the blocker explicit.
+
+## Attention Pause Rule
+
+If canonical state does not open a human-gated decision but still sets:
+
+- `human_attention: async-review`
+- or `human_attention: required-now`
+
+then `overnight` should:
+
+- checkpoint the run as `paused`
+- keep `STATE.md.current_run_id`
+- record the blocking reason from canonical steering state
+- stop without inventing decision options
 
 ## Phase 2 Delegation Rule
 

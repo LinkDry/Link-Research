@@ -176,8 +176,8 @@ After an active line exists, route from canonical state:
 - `run-experiment` when the line is ready for first execution, rerun, or bounded tweak
 - `analyze-results` when new result evidence exists without current structured analysis
 - `drift-detector` when current analysis exists but drift for the latest evidence is missing or stale
-- `judge` when drift is `consistent` and the current iteration is ready for verdict
-- `experiment-plan` when judge has already set `next_experiment_action: branch` and canonical posture still allows bounded autonomous branching
+- `judge` when drift is `consistent` and `next_experiment_action` is `judge-ready`
+- `experiment-plan` when judge has already set `next_experiment_action: branch`, canonical posture still allows bounded autonomous branching, and the current idea-scoped plan slot is safe to reuse
 - `archive` when judge has already set `next_experiment_action: archive` and the project is not human-gated
 
 If the latest canonical posture is `phase2-ready`, finish the Phase 1 run as a handoff-ready completion instead of faking a Phase 2 start.
@@ -199,7 +199,6 @@ Before executing the selected step, inspect `STATE.md`.
 If canonical posture is:
 
 - `decision_mode: human-gated`
-- or `human_attention: required-now`
 
 then:
 
@@ -219,6 +218,19 @@ then:
    - stop and report the contract gap
 
 Do not clear or rewrite the canonical decision in `STATE.md`.
+
+If canonical posture instead shows:
+
+- `human_attention: async-review`
+- or `human_attention: required-now`
+
+without a `human-gated` decision artifact, then:
+
+1. set run `status: paused`
+2. set `blocking_reason` from canonical steering state
+3. set `resume_safe: false` only if the blocker makes safe continuation ambiguous
+4. update `review-state.json`
+5. stop cleanly without inventing decision options
 
 ### 6. Execute The Step And Checkpoint It
 

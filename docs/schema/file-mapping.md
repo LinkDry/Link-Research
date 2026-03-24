@@ -124,12 +124,14 @@ Rules:
 - owns the locked research claim and validation intent for one branch line
 - must never be rewritten to match later results
 - new scientific framing requires a new anchor version or branch
+- under the current idea-scoped path contract, only one active branch per `idea_id` may safely own this file at a time
 
 ### `experiment-plan.md`
 
 - owns the editable pre-anchor experiment design for the active branch line
 - must be specific enough for `anchor-wrapper` to lock a falsifiable anchor
 - must not be treated as the canonical locked claim after `anchor.md` exists
+- under the current idea-scoped path contract, activating a same-idea sibling branch requires an explicit governance decision before reusing this slot
 
 ### `analysis-report.json`
 
