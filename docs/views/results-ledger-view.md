@@ -50,8 +50,8 @@ If a single evaluation run emits multiple important metrics:
 | `metric_value` | yes | observed value |
 | `baseline_value` | no | comparison baseline value if relevant |
 | `delta_value` | no | difference from baseline if relevant |
-| `artifact_path` | no | path to detailed artifact or report |
-| `analysis_ref` | no | pointer to associated analysis block |
+| `artifact_path` | no | path to the run artifact directory or primary evidence artifact |
+| `analysis_ref` | no | pointer to the associated `analysis-report.json` or equivalent analysis artifact |
 | `evidence_status` | yes | `valid`, `suspect`, or `invalidated` |
 | `notes_ref` | no | pointer to extra notes or caveats |
 
@@ -68,6 +68,9 @@ result_id	result_group_id	supersedes_result_id	project_id	experiment_id	idea_id	
 3. `analysis_ref` should resolve to the analysis that interpreted the row or result group.
 4. `evidence_status` must be downgraded if later audit finds contamination, misalignment, or invalid comparison.
 5. `latest_result_ref` in `experiment-memory.md` should point to a `result_group_id` or a clearly defined row selector.
+6. When possible, `artifact_path` should point to a result artifact directory that contains:
+   - `analysis-report.json`
+   - `config-snapshot.json`
 
 ## Content That Does Not Belong Here
 

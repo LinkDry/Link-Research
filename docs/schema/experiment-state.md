@@ -41,7 +41,7 @@ Experiment State does not store:
 | `anchor_version` | string | anchor version or variant label | Claude |
 | `iteration_count` | integer | completed iteration count | Claude, judge |
 | `latest_result_ref` | ref/null | latest results ledger reference | Claude, dashboard |
-| `latest_analysis_ref` | ref/null | latest analysis block reference | Claude |
+| `latest_analysis_ref` | ref/null | latest structured analysis artifact reference | Claude |
 | `latest_drift_score` | number/null | latest drift score | Claude, dashboard |
 | `latest_drift_decision` | enum/null | latest drift decision | Claude |
 | `latest_judge_verdict` | enum/null | latest judge verdict | Claude |

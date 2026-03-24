@@ -77,6 +77,8 @@ Rules:
 | `projects/<slug>/results.tsv` | secondary evidence view | Experiment State | append-only results ledger | append only |
 | `projects/<slug>/plans/<idea>/anchor.md` | secondary evidence view | Experiment State | immutable anchor evidence | write once per anchor version |
 | `projects/<slug>/plans/<idea>/experiment-plan.md` | secondary planning input | planning input for Experiment State | editable pre-anchor experiment design | overwrite until anchor lock or explicit revision |
+| `projects/<slug>/workspace/results/<result-group-id>/analysis-report.json` | secondary evidence view | Experiment State | structured interpretation of one result group | overwrite per result group artifact |
+| `projects/<slug>/workspace/results/<result-group-id>/config-snapshot.json` | secondary evidence view | Experiment State | machine-comparable record of what actually ran | write once per result group artifact |
 | `projects/<slug>/decision-tree.md` | secondary evidence view | Experiment State | branch governance history | append and summarize |
 | `memory/archive/*.md` | historical archive | Memory State | compacted global lesson history | append and rotate |
 | `projects/<slug>/archive/*.md` | historical archive | Experiment State | completed branch or experiment case record | append new archive record |
@@ -126,6 +128,18 @@ Rules:
 - owns the editable pre-anchor experiment design for the active branch line
 - must be specific enough for `anchor-wrapper` to lock a falsifiable anchor
 - must not be treated as the canonical locked claim after `anchor.md` exists
+
+### `analysis-report.json`
+
+- owns the structured interpretation of one result group
+- must point back to concrete results rows or result groups
+- must not replace canonical steering state
+
+### `config-snapshot.json`
+
+- owns the machine-comparable record of what actually ran
+- must reflect executed configuration rather than intended configuration
+- must not replace anchor rules or canonical verdict state
 
 ### `lessons-learned.md`
 

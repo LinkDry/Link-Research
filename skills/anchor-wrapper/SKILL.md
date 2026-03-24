@@ -128,6 +128,7 @@ Write `projects/<slug>/plans/<idea>/anchor.md` as a write-once artifact using th
 
 ## Evidence Boundaries
 - allowed_mutations:
+- locked_invariants:
 - red_lines:
 - source_refs:
 
@@ -145,6 +146,8 @@ Rules:
 - map `hypothesis_statement` into `claim`
 - map the success criteria fields into `primary_success_criteria`
 - map `mutable_variables` into `allowed_mutations`
+- map `mutable_variables` into `allowed_mutations`
+- map `immutable_variables` into `locked_invariants`
 - carry `red_lines`, `source_refs`, `disconfirming_signals`, and `archive_if_true` through without inventing replacements
 - preserve plan wording where precision matters
 - do not add new schema fields ad hoc

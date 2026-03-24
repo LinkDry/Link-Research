@@ -117,6 +117,7 @@ The `Active Line Snapshot` section should directly mirror these Experiment State
 - summarize only the most decision-relevant evidence
 - always point back to `latest_result_ref` and `latest_analysis_ref`
 - do not embed raw metric dumps already present elsewhere
+- prefer `latest_analysis_ref` to resolve to a structured analysis artifact such as `analysis-report.json`
 
 ### Iteration History
 

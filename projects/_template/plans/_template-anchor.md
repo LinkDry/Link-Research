@@ -22,6 +22,7 @@
 
 ## Evidence Boundaries
 - allowed_mutations:
+- locked_invariants:
 - red_lines:
 - source_refs:
 
