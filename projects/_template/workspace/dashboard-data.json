@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "generated_at": "2026-03-24T00:00:00+08:00",
+    "schema_version": "v2-draft",
+    "is_derived": true
+  },
+  "project": {
+    "project_id": "proj-template",
+    "phase": "phase0",
+    "project_status": "idle",
+    "next_action": "Fill project-brief.md and create the first idea.",
+    "risk_level": "low"
+  },
+  "experiment": {
+    "experiment_id": "exp-template",
+    "status": "planned",
+    "latest_judge_verdict": null,
+    "latest_drift_score": null,
+    "next_experiment_action": "wait-human"
+  },
+  "run": {
+    "run_id": "run-template",
+    "status": "pending",
+    "current_step_name": "not-started",
+    "human_attention": "none"
+  },
+  "memory": {
+    "recent_warnings": [],
+    "active_patterns": [],
+    "open_capability_gaps": []
+  }
+}
