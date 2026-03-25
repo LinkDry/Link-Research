@@ -40,6 +40,10 @@ If the current idea-scoped `anchor.md` or `experiment-plan.md` slot may later be
 should snapshot those files into `projects/<slug>/archive/artifacts/<experiment_id>/` and point the
 archive record at the stable archived copies rather than the live slot paths.
 
+If the line was abandoned before an anchor or attributable experiment plan existed, archive should
+keep the locked-claim fields in the archive record as `null` and describe the incomplete state in
+the evidence or failure sections rather than inventing claim context.
+
 ### Project-Local Case Record
 
 Archive must create:
@@ -101,6 +105,19 @@ If the archived line is the current active line, reset the active snapshot to th
 - `archive_recommended: false`
 - `human_review_required: false`
 - `next_experiment_action: wait-human`
+
+Reset the compact summary blocks to these exact neutral defaults as well:
+
+- `locked_anchor_path: null`
+- `anchor_claim_summary: No anchor has been locked yet.`
+- `anchor_constraints: Define the first anchor before running experiments.`
+- `latest_result_ref: null`
+- `latest_analysis_ref: null`
+- `primary_signal_summary: No evidence recorded yet.`
+- `open_risks: ["No active anchor", "No evaluation evidence", "No drift review"]`
+- `summary: No analysis has been produced yet.`
+- `evidence_gaps: ["Run the first experiment", "Produce the first structured analysis", "Evaluate drift against the anchor"]`
+- `recommended_next_action: Lock an anchor and execute the first validation run.`
 
 ### Branch Governance
 

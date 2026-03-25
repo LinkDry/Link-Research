@@ -124,6 +124,9 @@ The record must include:
 Prefer summaries plus refs over copying whole ledgers or whole anchor contents.
 If the current idea-scoped `anchor.md` or `experiment-plan.md` slot may later be reused, point the
 archive record to stable snapshot copies inside the archive artifact bundle instead of the live path.
+If the line was abandoned before a locked claim or attributable experiment plan existed, keep
+`anchor_path`, `anchor_version`, `claim_summary`, and `plan_ref` as `null` rather than inventing
+missing claim context.
 
 ### 4. Preserve Workspace Artifacts Safely
 

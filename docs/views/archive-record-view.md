@@ -87,3 +87,4 @@ It should point back to:
 5. This file must remain human-readable and structurally consistent enough for later extraction.
 6. `lesson_ref` and `failure_library_ref` should point to concrete inserted memory row refs or stable IDs, not dangling template anchors.
 7. When live idea-scoped `anchor.md` or `experiment-plan.md` files may later be reused, `anchor_path` and `plan_ref` should resolve to archived snapshot copies inside the artifact bundle.
+8. For early-abandonment or pre-anchor closures, `anchor_path`, `anchor_version`, `claim_summary`, and `plan_ref` may be `null`; do not invent missing locked-claim context.

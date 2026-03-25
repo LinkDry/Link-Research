@@ -8,20 +8,20 @@
     "project_id": "proj-template",
     "phase": "phase0",
     "project_status": "idle",
-    "next_action": "Fill project-brief.md and create the first idea.",
+    "next_action": "Fill project-brief.md and define the first candidate idea.",
     "risk_level": "low"
   },
   "experiment": {
-    "experiment_id": "exp-template",
+    "experiment_id": null,
     "status": "planned",
     "latest_judge_verdict": null,
     "latest_drift_score": null,
     "next_experiment_action": "wait-human"
   },
   "run": {
-    "run_id": "run-template",
-    "status": "pending",
-    "current_step_name": "not-started",
+    "run_id": null,
+    "status": null,
+    "current_step_name": null,
     "human_attention": "none"
   },
   "memory": {
