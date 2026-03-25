@@ -77,3 +77,39 @@ def test_readme_documents_cli_quickstart():
     content = readme.read_text(encoding="utf-8")
     assert "python -m tools.link_research_cli new-project" in content
     assert "python -m tools.link_research_cli harness-lint" in content
+    assert "python -m tools.link_research_cli current-project" in content
+    assert "docs/guides/phase1-quickstart.md" in content
+    assert "docs/guides/recovery-and-resume.md" in content
+
+
+def test_operator_guides_exist():
+    repo_root = Path(__file__).resolve().parents[1]
+    quickstart = repo_root / "docs" / "guides" / "phase1-quickstart.md"
+    recovery = repo_root / "docs" / "guides" / "recovery-and-resume.md"
+
+    assert quickstart.exists()
+    assert recovery.exists()
+    assert "Phase 1" in quickstart.read_text(encoding="utf-8")
+    assert "resume" in recovery.read_text(encoding="utf-8").lower()
+
+
+def test_cli_current_project_reports_status_and_prompt(repo_fixture: Path, capsys: pytest.CaptureFixture[str]):
+    create_project(repo_fixture, "demo-project", "Demo Project")
+    main(["switch-project", "--slug", "demo-project"], repo_root=repo_fixture)
+
+    exit_code = main(["current-project"], repo_root=repo_fixture)
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Current project: demo-project" in captured.out
+    assert "Phase: phase0" in captured.out
+    assert "Next action:" in captured.out
+    assert "Suggested Claude prompt:" in captured.out
+
+
+def test_cli_current_project_handles_missing_runtime_pointer(repo_fixture: Path, capsys: pytest.CaptureFixture[str]):
+    exit_code = main(["current-project"], repo_root=repo_fixture)
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "No current project selected" in captured.err

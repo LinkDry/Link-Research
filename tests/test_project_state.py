@@ -3,9 +3,11 @@ from pathlib import Path
 
 from tools.project_state import (
     build_dashboard_projection,
+    build_current_project_status,
     load_json_file,
     parse_experiment_memory,
     parse_state_markdown,
+    suggest_operator_prompt,
 )
 
 
@@ -42,3 +44,30 @@ def test_build_dashboard_projection_matches_template_fixture():
     expected = json.loads((TEMPLATE_DIR / "workspace" / "dashboard-data.json").read_text(encoding="utf-8"))
 
     assert actual == expected
+
+
+def test_build_current_project_status_uses_canonical_state():
+    state = parse_state_markdown(TEMPLATE_DIR / "STATE.md")
+    experiment = parse_experiment_memory(TEMPLATE_DIR / "experiment-memory.md")
+    review_state = load_json_file(TEMPLATE_DIR / "review-state.json")
+
+    status = build_current_project_status("demo-project", state, experiment, review_state)
+
+    assert status["slug"] == "demo-project"
+    assert status["project_title"] == "Template Project"
+    assert status["phase"] == "phase0"
+    assert status["project_status"] == "idle"
+    assert status["current_run_id"] is None
+    assert status["run_status"] is None
+
+
+def test_suggest_operator_prompt_for_bootstrap_state():
+    state = parse_state_markdown(TEMPLATE_DIR / "STATE.md")
+    experiment = parse_experiment_memory(TEMPLATE_DIR / "experiment-memory.md")
+    review_state = load_json_file(TEMPLATE_DIR / "review-state.json")
+    status = build_current_project_status("demo-project", state, experiment, review_state)
+
+    prompt = suggest_operator_prompt(status)
+
+    assert "project-brief.md" in prompt
+    assert "Phase 1 bootstrap" in prompt

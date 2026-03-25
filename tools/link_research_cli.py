@@ -6,7 +6,12 @@ from pathlib import Path
 from typing import Sequence
 
 from tools.harness_lint import run_harness_lint
-from tools.project_ops import create_project, list_projects, write_runtime_pointer
+from tools.project_ops import (
+    create_project,
+    list_projects,
+    load_current_project_summary,
+    write_runtime_pointer,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -22,6 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
     switch_project.add_argument("--slug", required=True)
 
     subparsers.add_parser("list-projects")
+    subparsers.add_parser("current-project")
     subparsers.add_parser("harness-lint")
     return parser
 
@@ -73,6 +79,30 @@ def _handle_harness_lint(repo_root: Path) -> int:
     return 0 if report["error_count"] == 0 else 1
 
 
+def _handle_current_project(repo_root: Path) -> int:
+    summary = load_current_project_summary(repo_root)
+    if summary is None:
+        print(
+            "No current project selected. Run: python -m tools.link_research_cli switch-project --slug <slug>",
+            file=sys.stderr,
+        )
+        return 1
+
+    print(f"Current project: {summary['slug']}")
+    print(f"Title: {summary['project_title']}")
+    print(f"Phase: {summary['phase']}")
+    print(f"Status: {summary['project_status']}")
+    print(f"Project path: {summary['project_path']}")
+    print(f"Active idea: {summary['active_idea_id'] or 'none'}")
+    print(f"Active branch: {summary['active_branch_id'] or 'none'}")
+    print(f"Current run: {summary['current_run_id'] or 'none'}")
+    if summary["run_status"] is not None:
+        print(f"Run status: {summary['run_status']}")
+    print(f"Next action: {summary['next_action']}")
+    print(f"Suggested Claude prompt: {summary['suggested_prompt']}")
+    return 0
+
+
 def main(argv: Sequence[str] | None = None, repo_root: Path | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -85,6 +115,8 @@ def main(argv: Sequence[str] | None = None, repo_root: Path | None = None) -> in
             return _handle_switch_project(args, root)
         if args.command == "list-projects":
             return _handle_list_projects(root)
+        if args.command == "current-project":
+            return _handle_current_project(root)
         if args.command == "harness-lint":
             return _handle_harness_lint(root)
         parser.error(f"Unsupported command: {args.command}")

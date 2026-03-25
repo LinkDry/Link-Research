@@ -18,6 +18,12 @@ Set the current project pointer used by local operator tooling:
 python -m tools.link_research_cli switch-project --slug demo-project
 ```
 
+Inspect the currently selected project and get a suggested next Claude prompt:
+
+```bash
+python -m tools.link_research_cli current-project
+```
+
 List live projects:
 
 ```bash
@@ -35,6 +41,21 @@ Run the tooling test suite:
 ```bash
 pytest -q
 ```
+
+## Operator Flow
+
+For the real day-1 path into Phase 1, use:
+
+- `docs/guides/phase1-quickstart.md`
+- `docs/guides/recovery-and-resume.md`
+
+The intended operator loop is:
+
+1. Create a project.
+2. Switch to it.
+3. Fill `projects/<slug>/project-brief.md`.
+4. Ask Claude to begin Phase 1 bootstrap.
+5. Use `python -m tools.link_research_cli current-project` whenever you need a fast recovery summary.
 
 ## Notes
 

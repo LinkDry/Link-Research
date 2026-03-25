@@ -8,9 +8,11 @@ from typing import Any
 
 from tools.project_state import (
     build_dashboard_projection,
+    build_current_project_status,
     load_json_file,
     parse_experiment_memory,
     parse_state_markdown,
+    suggest_operator_prompt,
 )
 
 
@@ -168,6 +170,26 @@ def load_runtime_pointer(repo_root: Path) -> dict[str, Any] | None:
     if not runtime_path.exists():
         return None
     return load_json_file(runtime_path)
+
+
+def load_current_project_summary(repo_root: Path) -> dict[str, Any] | None:
+    runtime_state = load_runtime_pointer(repo_root)
+    if runtime_state is None:
+        return None
+
+    slug = runtime_state["current_project_slug"]
+    project_dir = _project_dir(repo_root, slug)
+    if not project_dir.exists():
+        raise ValueError(f"Runtime pointer references missing project: {slug}")
+
+    state = parse_state_markdown(project_dir / "STATE.md")
+    experiment = parse_experiment_memory(project_dir / "experiment-memory.md")
+    review_state = load_json_file(project_dir / "review-state.json")
+
+    summary = build_current_project_status(slug, state, experiment, review_state)
+    summary["project_path"] = f"projects/{slug}"
+    summary["suggested_prompt"] = suggest_operator_prompt(summary)
+    return summary
 
 
 def list_projects(repo_root: Path) -> list[dict[str, Any]]:

@@ -7,6 +7,7 @@ import pytest
 from tools.project_ops import (
     create_project,
     load_runtime_pointer,
+    load_current_project_summary,
     validate_project_slug,
     write_runtime_pointer,
 )
@@ -82,3 +83,17 @@ def test_runtime_pointer_round_trip(repo_fixture: Path):
     assert runtime_state["current_project_slug"] == "demo-project"
     assert runtime_state["current_project_path"] == "projects/demo-project"
     assert load_runtime_pointer(repo_root=repo_fixture) == runtime_state
+
+
+def test_load_current_project_summary_reads_selected_project(repo_fixture: Path):
+    create_project(repo_root=repo_fixture, slug="demo-project", title="Demo Project")
+    write_runtime_pointer(repo_root=repo_fixture, slug="demo-project")
+
+    summary = load_current_project_summary(repo_root=repo_fixture)
+
+    assert summary is not None
+    assert summary["slug"] == "demo-project"
+    assert summary["project_title"] == "Demo Project"
+    assert summary["phase"] == "phase0"
+    assert summary["project_status"] == "idle"
+    assert "project-brief.md" in summary["suggested_prompt"]
