@@ -10,6 +10,9 @@ from tools.project_ops import (
     create_project,
     list_projects,
     load_current_project_summary,
+    load_runtime_pointer,
+    refresh_all_dashboards,
+    refresh_project_dashboard,
     write_runtime_pointer,
 )
 
@@ -28,6 +31,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     subparsers.add_parser("list-projects")
     subparsers.add_parser("current-project")
+    refresh_dashboard = subparsers.add_parser("refresh-dashboard")
+    refresh_target = refresh_dashboard.add_mutually_exclusive_group()
+    refresh_target.add_argument("--slug")
+    refresh_target.add_argument("--all", action="store_true")
+    refresh_target.add_argument("--current", action="store_true")
     subparsers.add_parser("harness-lint")
     return parser
 
@@ -79,6 +87,34 @@ def _handle_harness_lint(repo_root: Path) -> int:
     return 0 if report["error_count"] == 0 else 1
 
 
+def _handle_refresh_dashboard(args: argparse.Namespace, repo_root: Path) -> int:
+    if args.all:
+        refreshed = refresh_all_dashboards(repo_root)
+        if not refreshed:
+            print("No live projects found to refresh.")
+            return 0
+        for item in refreshed:
+            print(f"Refreshed dashboard for {item['slug']} -> {item['html_path']}")
+        return 0
+
+    if args.slug:
+        item = refresh_project_dashboard(repo_root, args.slug)
+        print(f"Refreshed dashboard for {item['slug']} -> {item['html_path']}")
+        return 0
+
+    runtime = load_runtime_pointer(repo_root)
+    if runtime is None:
+        print(
+            "No current project selected. Run switch-project first or pass --slug.",
+            file=sys.stderr,
+        )
+        return 1
+
+    item = refresh_project_dashboard(repo_root, runtime["current_project_slug"])
+    print(f"Refreshed dashboard for {item['slug']} -> {item['html_path']}")
+    return 0
+
+
 def _handle_current_project(repo_root: Path) -> int:
     summary = load_current_project_summary(repo_root)
     if summary is None:
@@ -121,6 +157,8 @@ def main(argv: Sequence[str] | None = None, repo_root: Path | None = None) -> in
             return _handle_list_projects(root)
         if args.command == "current-project":
             return _handle_current_project(root)
+        if args.command == "refresh-dashboard":
+            return _handle_refresh_dashboard(args, root)
         if args.command == "harness-lint":
             return _handle_harness_lint(root)
         parser.error(f"Unsupported command: {args.command}")

@@ -78,19 +78,24 @@ def test_readme_documents_cli_quickstart():
     assert "python -m tools.link_research_cli new-project" in content
     assert "python -m tools.link_research_cli harness-lint" in content
     assert "python -m tools.link_research_cli current-project" in content
+    assert "python -m tools.link_research_cli refresh-dashboard" in content
     assert "docs/guides/phase1-quickstart.md" in content
     assert "docs/guides/recovery-and-resume.md" in content
+    assert "docs/guides/dashboard-usage.md" in content
 
 
 def test_operator_guides_exist():
     repo_root = Path(__file__).resolve().parents[1]
     quickstart = repo_root / "docs" / "guides" / "phase1-quickstart.md"
     recovery = repo_root / "docs" / "guides" / "recovery-and-resume.md"
+    dashboard = repo_root / "docs" / "guides" / "dashboard-usage.md"
 
     assert quickstart.exists()
     assert recovery.exists()
+    assert dashboard.exists()
     assert "Phase 1" in quickstart.read_text(encoding="utf-8")
     assert "resume" in recovery.read_text(encoding="utf-8").lower()
+    assert "dashboard" in dashboard.read_text(encoding="utf-8").lower()
 
 
 def test_cli_current_project_reports_status_and_prompt(repo_fixture: Path, capsys: pytest.CaptureFixture[str]):
@@ -163,3 +168,27 @@ def test_cli_current_project_surfaces_human_gated_phase2_handoff(
     assert "Decision mode: human-gated" in captured.out
     assert "Decision type: phase2-handoff" in captured.out
     assert "before starting Phase 2" in captured.out
+
+
+def test_cli_refresh_dashboard_current_project_writes_html(repo_fixture: Path, capsys: pytest.CaptureFixture[str]):
+    project_dir = create_project(repo_fixture, "demo-project", "Demo Project")
+    main(["switch-project", "--slug", "demo-project"], repo_root=repo_fixture)
+
+    exit_code = main(["refresh-dashboard"], repo_root=repo_fixture)
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Refreshed dashboard for demo-project" in captured.out
+    assert (project_dir / "workspace" / "dashboard.html").exists()
+
+
+def test_cli_refresh_dashboard_all_projects(repo_fixture: Path, capsys: pytest.CaptureFixture[str]):
+    create_project(repo_fixture, "demo-project", "Demo Project")
+    create_project(repo_fixture, "second-project", "Second Project")
+
+    exit_code = main(["refresh-dashboard", "--all"], repo_root=repo_fixture)
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "demo-project" in captured.out
+    assert "second-project" in captured.out

@@ -6,13 +6,22 @@
   },
   "project": {
     "project_id": "proj-template",
+    "project_title": "Template Project",
     "phase": "phase0",
     "project_status": "idle",
     "next_action": "Fill project-brief.md and define the first candidate idea.",
-    "risk_level": "low"
+    "risk_level": "low",
+    "decision_mode": "auto-report",
+    "decision_type": null,
+    "human_attention": "none",
+    "active_idea_id": null,
+    "active_branch_id": null,
+    "blockers": []
   },
   "experiment": {
     "experiment_id": null,
+    "idea_id": null,
+    "branch_id": null,
     "status": "planned",
     "latest_judge_verdict": null,
     "latest_drift_score": null,
@@ -22,9 +31,12 @@
     "run_id": null,
     "status": null,
     "current_step_name": null,
-    "human_attention": "none"
+    "human_attention": "none",
+    "resume_safe": false,
+    "blocking_reason": null
   },
   "memory": {
+    "recent_lessons": [],
     "recent_warnings": [],
     "active_patterns": [],
     "open_capability_gaps": []

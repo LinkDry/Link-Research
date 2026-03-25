@@ -68,12 +68,76 @@ def parse_experiment_memory(path: Path) -> dict[str, Any]:
     return rows
 
 
+def _parse_markdown_table_section(text: str, heading: str) -> list[dict[str, Any]]:
+    lines = text.splitlines()
+    in_section = False
+    table_lines: list[str] = []
+    for line in lines:
+        stripped = line.strip()
+        if stripped == heading:
+            in_section = True
+            continue
+        if in_section and stripped.startswith("## "):
+            break
+        if in_section and stripped.startswith("|"):
+            table_lines.append(stripped)
+
+    if len(table_lines) < 3:
+        return []
+
+    headers = [cell.strip() for cell in table_lines[0].strip("|").split("|")]
+    rows: list[dict[str, Any]] = []
+    for line in table_lines[2:]:
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        if len(cells) != len(headers):
+            continue
+        row = {header: _coerce_value(value) for header, value in zip(headers, cells)}
+        first_header = headers[0]
+        if row.get(first_header) == "-":
+            continue
+        rows.append(row)
+    return rows
+
+
+def load_memory_state(repo_root: Path) -> dict[str, Any]:
+    lessons_path = repo_root / "memory" / "lessons-learned.md"
+    failure_path = repo_root / "memory" / "failure-library.md"
+
+    lessons_text = lessons_path.read_text(encoding="utf-8") if lessons_path.exists() else ""
+    failures_text = failure_path.read_text(encoding="utf-8") if failure_path.exists() else ""
+
+    recent_lessons = _parse_markdown_table_section(lessons_text, "## Recent Lessons")
+    active_patterns = _parse_markdown_table_section(lessons_text, "## Persistent Patterns")
+    capability_gaps = _parse_markdown_table_section(lessons_text, "## Capability Gaps")
+    recent_warnings = _parse_markdown_table_section(failures_text, "## Failure Cases")
+
+    open_capability_gaps = [
+        gap
+        for gap in capability_gaps
+        if str(gap.get("status", "")).lower() not in {"resolved", "closed", "done"}
+    ]
+
+    return {
+        "recent_lessons": recent_lessons,
+        "active_patterns": active_patterns,
+        "open_capability_gaps": open_capability_gaps,
+        "recent_warnings": recent_warnings,
+    }
+
+
 def build_dashboard_projection(
     state: dict[str, Any],
     experiment: dict[str, Any],
     review_state: dict[str, Any],
+    memory_state: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     run_is_active = state.get("current_run_id") and review_state.get("run_id") == state.get("current_run_id")
+    memory_state = memory_state or {
+        "recent_lessons": [],
+        "active_patterns": [],
+        "open_capability_gaps": [],
+        "recent_warnings": [],
+    }
     run_block: dict[str, Any]
     if run_is_active:
         run_block = {
@@ -81,6 +145,8 @@ def build_dashboard_projection(
             "status": review_state.get("status"),
             "current_step_name": review_state.get("current_step_name"),
             "human_attention": review_state.get("human_attention"),
+            "resume_safe": review_state.get("resume_safe"),
+            "blocking_reason": review_state.get("blocking_reason"),
         }
     else:
         run_block = {
@@ -88,6 +154,8 @@ def build_dashboard_projection(
             "status": None,
             "current_step_name": None,
             "human_attention": state.get("human_attention", "none"),
+            "resume_safe": False,
+            "blocking_reason": None,
         }
 
     return {
@@ -98,13 +166,22 @@ def build_dashboard_projection(
         },
         "project": {
             "project_id": state.get("project_id"),
+            "project_title": state.get("project_title"),
             "phase": state.get("phase"),
             "project_status": state.get("project_status"),
             "next_action": state.get("next_action"),
             "risk_level": state.get("risk_level"),
+            "decision_mode": state.get("decision_mode"),
+            "decision_type": state.get("decision_type"),
+            "human_attention": state.get("human_attention"),
+            "active_idea_id": state.get("active_idea_id"),
+            "active_branch_id": state.get("active_branch_id"),
+            "blockers": state.get("blockers", []),
         },
         "experiment": {
             "experiment_id": experiment.get("experiment_id"),
+            "idea_id": experiment.get("idea_id"),
+            "branch_id": experiment.get("branch_id"),
             "status": experiment.get("status"),
             "latest_judge_verdict": experiment.get("latest_judge_verdict"),
             "latest_drift_score": experiment.get("latest_drift_score"),
@@ -112,9 +189,10 @@ def build_dashboard_projection(
         },
         "run": run_block,
         "memory": {
-            "recent_warnings": [],
-            "active_patterns": [],
-            "open_capability_gaps": [],
+            "recent_lessons": memory_state.get("recent_lessons", []),
+            "recent_warnings": memory_state.get("recent_warnings", []),
+            "active_patterns": memory_state.get("active_patterns", []),
+            "open_capability_gaps": memory_state.get("open_capability_gaps", []),
         },
     }
 

@@ -6,6 +6,7 @@ from typing import Any
 
 from tools.project_state import (
     build_dashboard_projection,
+    load_memory_state,
     load_json_file,
     parse_experiment_memory,
     parse_state_markdown,
@@ -120,7 +121,8 @@ def _lint_template_dashboard(repo_root: Path, findings: list[dict[str, Any]]) ->
     state = parse_state_markdown(required_paths[0])
     experiment = parse_experiment_memory(required_paths[1])
     review_state = load_json_file(required_paths[2])
-    expected = build_dashboard_projection(state, experiment, review_state)
+    memory_state = load_memory_state(repo_root)
+    expected = build_dashboard_projection(state, experiment, review_state, memory_state)
     actual = load_json_file(required_paths[3])
     if actual != expected:
         _add_finding(

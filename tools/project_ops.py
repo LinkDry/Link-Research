@@ -6,9 +6,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from tools.dashboard_renderer import render_dashboard_html
 from tools.project_state import (
     build_dashboard_projection,
     build_current_project_status,
+    load_memory_state,
     load_json_file,
     parse_experiment_memory,
     parse_state_markdown,
@@ -119,13 +121,42 @@ def _copy_static_file(repo_root: Path, slug: str, relative_path: str) -> None:
     _write_text(target, source.read_text(encoding="utf-8"))
 
 
-def _write_dashboard(repo_root: Path, slug: str) -> None:
+def _load_project_snapshot(repo_root: Path, slug: str) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     project_root = _project_dir(repo_root, slug)
     state = parse_state_markdown(project_root / "STATE.md")
     experiment = parse_experiment_memory(project_root / "experiment-memory.md")
     review_state = load_json_file(project_root / "review-state.json")
-    dashboard = build_dashboard_projection(state, experiment, review_state)
+    return state, experiment, review_state
+
+
+def refresh_project_dashboard(repo_root: Path, slug: str) -> dict[str, Any]:
+    project_root = _project_dir(repo_root, slug)
+    if not project_root.exists():
+        raise ValueError(f"Unknown project slug: {slug}")
+
+    state, experiment, review_state = _load_project_snapshot(repo_root, slug)
+    memory_state = load_memory_state(repo_root)
+    dashboard = build_dashboard_projection(state, experiment, review_state, memory_state)
     _write_text(project_root / "workspace" / "dashboard-data.json", json.dumps(dashboard, indent=2))
+    _write_text(project_root / "workspace" / "dashboard.html", render_dashboard_html(slug, dashboard))
+    return {
+        "slug": slug,
+        "project_path": f"projects/{slug}",
+        "data_path": f"projects/{slug}/workspace/dashboard-data.json",
+        "html_path": f"projects/{slug}/workspace/dashboard.html",
+    }
+
+
+def refresh_all_dashboards(repo_root: Path) -> list[dict[str, Any]]:
+    projects_root = repo_root / "projects"
+    refreshed: list[dict[str, Any]] = []
+    for child in sorted(projects_root.iterdir()):
+        if not child.is_dir() or child.name == "_template":
+            continue
+        if not (child / "STATE.md").exists():
+            continue
+        refreshed.append(refresh_project_dashboard(repo_root, child.name))
+    return refreshed
 
 
 def create_project(repo_root: Path, slug: str, title: str, owner: str | None = None) -> Path:
@@ -145,7 +176,7 @@ def create_project(repo_root: Path, slug: str, title: str, owner: str | None = N
     _instantiate_experiment_memory(repo_root, slug, timestamp)
     _copy_static_file(repo_root, slug, "results.tsv")
     _copy_static_file(repo_root, slug, "decision-tree.md")
-    _write_dashboard(repo_root, slug)
+    refresh_project_dashboard(repo_root, slug)
     return project_dir
 
 
@@ -182,12 +213,11 @@ def load_current_project_summary(repo_root: Path) -> dict[str, Any] | None:
     if not project_dir.exists():
         raise ValueError(f"Runtime pointer references missing project: {slug}")
 
-    state = parse_state_markdown(project_dir / "STATE.md")
-    experiment = parse_experiment_memory(project_dir / "experiment-memory.md")
-    review_state = load_json_file(project_dir / "review-state.json")
+    state, experiment, review_state = _load_project_snapshot(repo_root, slug)
 
     summary = build_current_project_status(slug, state, experiment, review_state)
     summary["project_path"] = f"projects/{slug}"
+    summary["dashboard_path"] = f"projects/{slug}/workspace/dashboard.html"
     summary["suggested_prompt"] = suggest_operator_prompt(summary)
     return summary
 

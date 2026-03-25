@@ -8,11 +8,13 @@ from tools.project_ops import (
     create_project,
     load_runtime_pointer,
     load_current_project_summary,
+    refresh_project_dashboard,
     validate_project_slug,
     write_runtime_pointer,
 )
 from tools.project_state import (
     build_dashboard_projection,
+    load_memory_state,
     load_json_file,
     parse_experiment_memory,
     parse_state_markdown,
@@ -25,6 +27,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 @pytest.fixture()
 def repo_fixture(tmp_path: Path) -> Path:
     shutil.copytree(REPO_ROOT / "projects", tmp_path / "projects")
+    shutil.copytree(REPO_ROOT / "memory", tmp_path / "memory")
     return tmp_path
 
 
@@ -51,6 +54,7 @@ def test_create_project_instantiates_live_project_without_template_noise(repo_fi
     assert (project_dir / "experiment-memory.md").exists()
     assert (project_dir / "review-state.json").exists()
     assert (project_dir / "workspace" / "dashboard-data.json").exists()
+    assert (project_dir / "workspace" / "dashboard.html").exists()
     assert (project_dir / "workspace" / "bootstrap").exists()
     assert (project_dir / "workspace" / "reviews").exists()
     assert (project_dir / "papers" / "drafts").exists()
@@ -63,6 +67,7 @@ def test_create_project_instantiates_live_project_without_template_noise(repo_fi
     experiment = parse_experiment_memory(project_dir / "experiment-memory.md")
     review_state = load_json_file(project_dir / "review-state.json")
     dashboard = load_json_file(project_dir / "workspace" / "dashboard-data.json")
+    memory_state = load_memory_state(repo_fixture)
     brief = (project_dir / "project-brief.md").read_text(encoding="utf-8")
 
     assert state["project_id"] == "proj-demo-project"
@@ -72,7 +77,7 @@ def test_create_project_instantiates_live_project_without_template_noise(repo_fi
     assert "project_title: Demo Project" in brief
     assert "project_slug: demo-project" in brief
     assert "owner: tester" in brief
-    assert dashboard == build_dashboard_projection(state, experiment, review_state)
+    assert dashboard == build_dashboard_projection(state, experiment, review_state, memory_state)
 
 
 def test_runtime_pointer_round_trip(repo_fixture: Path):
@@ -143,3 +148,22 @@ def test_load_current_project_summary_preserves_human_gated_handoff(repo_fixture
     assert summary["decision_type"] == "phase2-handoff"
     assert summary["run_pointer_status"] == "matched"
     assert "before starting Phase 2" in summary["suggested_prompt"]
+
+
+def test_refresh_project_dashboard_regenerates_payload_and_html(repo_fixture: Path):
+    project_dir = create_project(repo_root=repo_fixture, slug="demo-project", title="Demo Project")
+    dashboard_data_path = project_dir / "workspace" / "dashboard-data.json"
+    dashboard_html_path = project_dir / "workspace" / "dashboard.html"
+    dashboard_data_path.write_text("{}", encoding="utf-8")
+    dashboard_html_path.write_text("stale", encoding="utf-8")
+
+    refreshed = refresh_project_dashboard(repo_root=repo_fixture, slug="demo-project")
+
+    data = load_json_file(dashboard_data_path)
+    html = dashboard_html_path.read_text(encoding="utf-8")
+
+    assert refreshed["slug"] == "demo-project"
+    assert data["project"]["project_title"] == "Demo Project"
+    assert "dashboard.html" in refreshed["html_path"]
+    assert "Demo Project" in html
+    assert "Derived from canonical project files" in html

@@ -24,6 +24,12 @@ Inspect the currently selected project and get a suggested next Claude prompt:
 python -m tools.link_research_cli current-project
 ```
 
+Refresh the derived dashboard files for the current project:
+
+```bash
+python -m tools.link_research_cli refresh-dashboard
+```
+
 List live projects:
 
 ```bash
@@ -48,6 +54,7 @@ For the real day-1 path into Phase 1, use:
 
 - `docs/guides/phase1-quickstart.md`
 - `docs/guides/recovery-and-resume.md`
+- `docs/guides/dashboard-usage.md`
 
 The intended operator loop is:
 
@@ -56,6 +63,7 @@ The intended operator loop is:
 3. Fill `projects/<slug>/project-brief.md`.
 4. Ask Claude to begin Phase 1 bootstrap.
 5. Use `python -m tools.link_research_cli current-project` whenever you need a fast recovery summary.
+6. Use `python -m tools.link_research_cli refresh-dashboard` whenever you want a fresh dashboard snapshot and HTML view.
 
 ## Notes
 
