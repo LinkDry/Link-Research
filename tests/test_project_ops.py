@@ -8,6 +8,7 @@ from tools.project_ops import (
     create_project,
     load_runtime_pointer,
     load_current_project_summary,
+    refresh_all_dashboards,
     refresh_project_dashboard,
     validate_project_slug,
     write_runtime_pointer,
@@ -167,3 +168,19 @@ def test_refresh_project_dashboard_regenerates_payload_and_html(repo_fixture: Pa
     assert "dashboard.html" in refreshed["html_path"]
     assert "Demo Project" in html
     assert "Derived from canonical project files" in html
+
+
+def test_refresh_all_dashboards_writes_portfolio_index(repo_fixture: Path):
+    create_project(repo_root=repo_fixture, slug="demo-project", title="Demo Project")
+    create_project(repo_root=repo_fixture, slug="second-project", title="Second Project")
+    write_runtime_pointer(repo_root=repo_fixture, slug="demo-project")
+
+    refreshed = refresh_all_dashboards(repo_root=repo_fixture)
+
+    portfolio_path = repo_fixture / ".link-research" / "dashboard" / "index.html"
+    html = portfolio_path.read_text(encoding="utf-8")
+
+    assert len(refreshed) == 2
+    assert portfolio_path.exists()
+    assert "Research Portfolio" in html
+    assert "Demo Project" in html

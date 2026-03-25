@@ -134,6 +134,38 @@ def _lint_template_dashboard(repo_root: Path, findings: list[dict[str, Any]]) ->
         )
 
 
+def _lint_live_dashboards(repo_root: Path, findings: list[dict[str, Any]]) -> None:
+    projects_root = repo_root / "projects"
+    if not projects_root.exists():
+        return
+
+    memory_state = load_memory_state(repo_root)
+    for child in sorted(projects_root.iterdir()):
+        if not child.is_dir() or child.name == "_template":
+            continue
+        state_path = child / "STATE.md"
+        experiment_path = child / "experiment-memory.md"
+        review_path = child / "review-state.json"
+        dashboard_path = child / "workspace" / "dashboard-data.json"
+        required = [state_path, experiment_path, review_path, dashboard_path]
+        if not all(path.exists() for path in required):
+            continue
+
+        state = parse_state_markdown(state_path)
+        experiment = parse_experiment_memory(experiment_path)
+        review_state = load_json_file(review_path)
+        expected = build_dashboard_projection(state, experiment, review_state, memory_state)
+        actual = load_json_file(dashboard_path)
+        if actual != expected:
+            _add_finding(
+                findings,
+                "warning",
+                "stale-live-dashboard",
+                str(dashboard_path.relative_to(repo_root)).replace("\\", "/"),
+                "Live project dashboard projection is stale relative to canonical state. Run refresh-dashboard.",
+            )
+
+
 def _lint_skill_contracts(repo_root: Path, findings: list[dict[str, Any]]) -> None:
     skills_root = repo_root / "skills"
     if not skills_root.exists():
@@ -264,6 +296,7 @@ def run_harness_lint(repo_root: Path) -> dict[str, Any]:
     findings: list[dict[str, Any]] = []
     _lint_required_files(repo_root, findings)
     _lint_template_dashboard(repo_root, findings)
+    _lint_live_dashboards(repo_root, findings)
     _lint_skill_contracts(repo_root, findings)
     _lint_delegate_targets(repo_root, findings)
     _lint_runtime_pointer(repo_root, findings)

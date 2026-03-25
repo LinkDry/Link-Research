@@ -95,6 +95,7 @@ def _handle_refresh_dashboard(args: argparse.Namespace, repo_root: Path) -> int:
             return 0
         for item in refreshed:
             print(f"Refreshed dashboard for {item['slug']} -> {item['html_path']}")
+        print("Portfolio dashboard -> .link-research/dashboard/index.html")
         return 0
 
     if args.slug:

@@ -79,6 +79,7 @@ def test_readme_documents_cli_quickstart():
     assert "python -m tools.link_research_cli harness-lint" in content
     assert "python -m tools.link_research_cli current-project" in content
     assert "python -m tools.link_research_cli refresh-dashboard" in content
+    assert ".link-research/dashboard/index.html" in content
     assert "docs/guides/phase1-quickstart.md" in content
     assert "docs/guides/recovery-and-resume.md" in content
     assert "docs/guides/dashboard-usage.md" in content
@@ -95,7 +96,7 @@ def test_operator_guides_exist():
     assert dashboard.exists()
     assert "Phase 1" in quickstart.read_text(encoding="utf-8")
     assert "resume" in recovery.read_text(encoding="utf-8").lower()
-    assert "dashboard" in dashboard.read_text(encoding="utf-8").lower()
+    assert "portfolio" in dashboard.read_text(encoding="utf-8").lower()
 
 
 def test_cli_current_project_reports_status_and_prompt(repo_fixture: Path, capsys: pytest.CaptureFixture[str]):
@@ -192,3 +193,4 @@ def test_cli_refresh_dashboard_all_projects(repo_fixture: Path, capsys: pytest.C
     assert exit_code == 0
     assert "demo-project" in captured.out
     assert "second-project" in captured.out
+    assert ".link-research/dashboard/index.html" in captured.out

@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from tools.dashboard_renderer import render_dashboard_html
+from tools.dashboard_renderer import render_dashboard_html, render_portfolio_html
 from tools.project_state import (
     build_dashboard_projection,
     build_current_project_status,
@@ -55,6 +55,10 @@ def _project_dir(repo_root: Path, slug: str) -> Path:
 
 def _runtime_path(repo_root: Path) -> Path:
     return repo_root / ".link-research" / "runtime.json"
+
+
+def _portfolio_dashboard_path(repo_root: Path) -> Path:
+    return repo_root / ".link-research" / "dashboard" / "index.html"
 
 
 def _write_text(path: Path, content: str) -> None:
@@ -156,6 +160,24 @@ def refresh_all_dashboards(repo_root: Path) -> list[dict[str, Any]]:
         if not (child / "STATE.md").exists():
             continue
         refreshed.append(refresh_project_dashboard(repo_root, child.name))
+    current = load_runtime_pointer(repo_root)
+    current_slug = current["current_project_slug"] if current else None
+    portfolio_projects: list[dict[str, Any]] = []
+    for item in refreshed:
+        state = parse_state_markdown(repo_root / item["project_path"] / "STATE.md")
+        portfolio_projects.append(
+            {
+                "slug": item["slug"],
+                "project_title": state.get("project_title"),
+                "phase": state.get("phase"),
+                "project_status": state.get("project_status"),
+                "risk_level": state.get("risk_level"),
+                "next_action": state.get("next_action"),
+                "is_current": item["slug"] == current_slug,
+                "dashboard_path": item["html_path"],
+            }
+        )
+    _write_text(_portfolio_dashboard_path(repo_root), render_portfolio_html(portfolio_projects))
     return refreshed
 
 

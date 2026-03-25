@@ -360,3 +360,175 @@ def render_dashboard_html(slug: str, dashboard: dict[str, Any]) -> str:
 </body>
 </html>
 """
+
+
+def render_portfolio_html(projects: list[dict[str, Any]]) -> str:
+    cards: list[str] = []
+    for project in projects:
+        current_badge = '<span class="status-badge">Current focus</span>' if project.get("is_current") else ""
+        dashboard_path = project.get("dashboard_path", "")
+        dashboard_href = f"../../{dashboard_path}" if dashboard_path else "#"
+        cards.append(
+            f"""
+            <article class="project-card">
+              <div class="card-top">
+                <div>
+                  <p class="slug">{html.escape(project.get("slug", ""))}</p>
+                  <h2>{html.escape(project.get("project_title", project.get("slug", "")))}</h2>
+                </div>
+                {current_badge}
+              </div>
+              <div class="meta-row">
+                <span>Phase: {_escape(project.get("phase"))}</span>
+                <span>Status: {_escape(project.get("project_status"))}</span>
+                <span>Risk: {_escape(project.get("risk_level"))}</span>
+              </div>
+              <p class="next-action"><strong>Next:</strong> {_escape(project.get("next_action"))}</p>
+              <p class="path-label">Dashboard: <code>{html.escape(dashboard_path)}</code></p>
+              <a class="dashboard-link" href="{html.escape(dashboard_href)}">Open project dashboard</a>
+            </article>
+            """
+        )
+
+    if not cards:
+        cards.append('<p class="empty">No live projects found. Create one with <code>new-project</code>.</p>')
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research Portfolio</title>
+  <style>
+    :root {{
+      --bg: #f4f1ea;
+      --ink: #1f2724;
+      --muted: #5e6b65;
+      --card: rgba(255, 252, 248, 0.9);
+      --line: rgba(31, 39, 36, 0.12);
+      --accent: #365c54;
+      --accent-soft: rgba(54, 92, 84, 0.12);
+      --shadow: 0 18px 40px rgba(52, 66, 61, 0.1);
+      --hero: linear-gradient(135deg, #f0dec0 0%, #d1e2da 52%, #c4d6e6 100%);
+    }}
+    * {{ box-sizing: border-box; }}
+    body {{
+      margin: 0;
+      color: var(--ink);
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(54, 92, 84, 0.08), transparent 28%),
+        linear-gradient(180deg, var(--bg) 0%, #ebe3d6 100%);
+    }}
+    .shell {{
+      width: min(1120px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }}
+    .hero {{
+      background: var(--hero);
+      border-radius: 28px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 22px;
+    }}
+    .eyebrow {{
+      margin: 0 0 12px;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }}
+    h1, h2 {{
+      font-family: "Alegreya", Georgia, serif;
+      margin: 0;
+    }}
+    h1 {{
+      font-size: clamp(34px, 4vw, 52px);
+      line-height: 1;
+      margin-bottom: 10px;
+    }}
+    .hero-copy {{
+      margin: 0;
+      max-width: 760px;
+      color: var(--muted);
+    }}
+    .grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }}
+    .project-card {{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }}
+    .card-top {{
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }}
+    .slug {{
+      margin: 0 0 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 12px;
+      color: var(--muted);
+    }}
+    .status-badge {{
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      white-space: nowrap;
+    }}
+    .meta-row {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }}
+    .next-action {{
+      margin: 0 0 14px;
+    }}
+    .path-label {{
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 14px;
+      word-break: break-word;
+    }}
+    .dashboard-link {{
+      display: inline-flex;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+    }}
+    .empty {{
+      color: var(--muted);
+      margin: 0;
+    }}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">Link-Research V2 Portfolio</p>
+      <h1>Research Portfolio</h1>
+      <p class="hero-copy">Repo-local overview of live projects and their per-project dashboards. This page is derived and can be regenerated at any time.</p>
+    </section>
+    <section class="grid">
+      {''.join(cards)}
+    </section>
+  </main>
+</body>
+</html>
+"""

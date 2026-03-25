@@ -1,4 +1,4 @@
-from tools.dashboard_renderer import render_dashboard_html
+from tools.dashboard_renderer import render_dashboard_html, render_portfolio_html
 
 
 def test_render_dashboard_html_includes_core_sections():
@@ -55,3 +55,35 @@ def test_render_dashboard_html_includes_core_sections():
     assert "Metric leaked task difficulty." in html
     assert '<script id="dashboard-data" type="application/json">' in html
     assert "Derived from canonical project files" in html
+
+
+def test_render_portfolio_html_marks_current_project():
+    html = render_portfolio_html(
+        [
+            {
+                "slug": "demo-project",
+                "project_title": "Demo Project",
+                "phase": "phase1",
+                "project_status": "running",
+                "risk_level": "medium",
+                "next_action": "Analyze results",
+                "is_current": True,
+                "dashboard_path": "projects/demo-project/workspace/dashboard.html",
+            },
+            {
+                "slug": "second-project",
+                "project_title": "Second Project",
+                "phase": "phase0",
+                "project_status": "idle",
+                "risk_level": "low",
+                "next_action": "Fill project brief",
+                "is_current": False,
+                "dashboard_path": "projects/second-project/workspace/dashboard.html",
+            },
+        ]
+    )
+
+    assert "Research Portfolio" in html
+    assert "Demo Project" in html
+    assert "Current focus" in html
+    assert "projects/demo-project/workspace/dashboard.html" in html

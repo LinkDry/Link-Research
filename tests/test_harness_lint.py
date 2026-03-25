@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from tools.harness_lint import run_harness_lint
+from tools.project_ops import create_project
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -39,6 +40,18 @@ def test_lint_reports_dashboard_projection_mismatch(repo_fixture: Path):
     report = run_harness_lint(repo_fixture)
 
     assert "dashboard-projection-mismatch" in _finding_codes(report)
+
+
+def test_lint_warns_when_live_project_dashboard_is_stale(repo_fixture: Path):
+    project_dir = create_project(repo_root=repo_fixture, slug="demo-project", title="Demo Project")
+    dashboard_path = project_dir / "workspace" / "dashboard-data.json"
+    dashboard = json.loads(dashboard_path.read_text(encoding="utf-8"))
+    dashboard["project"]["project_status"] = "wrong-status"
+    dashboard_path.write_text(json.dumps(dashboard, indent=2), encoding="utf-8")
+
+    report = run_harness_lint(repo_fixture)
+
+    assert "stale-live-dashboard" in _finding_codes(report)
 
 
 def test_lint_reports_write_and_must_not_write_overlap(repo_fixture: Path):

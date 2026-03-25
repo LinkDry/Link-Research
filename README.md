@@ -30,6 +30,12 @@ Refresh the derived dashboard files for the current project:
 python -m tools.link_research_cli refresh-dashboard
 ```
 
+Refresh all live project dashboards and regenerate the repo-local portfolio page:
+
+```bash
+python -m tools.link_research_cli refresh-dashboard --all
+```
+
 List live projects:
 
 ```bash
@@ -64,6 +70,7 @@ The intended operator loop is:
 4. Ask Claude to begin Phase 1 bootstrap.
 5. Use `python -m tools.link_research_cli current-project` whenever you need a fast recovery summary.
 6. Use `python -m tools.link_research_cli refresh-dashboard` whenever you want a fresh dashboard snapshot and HTML view.
+7. Use `.link-research/dashboard/index.html` after `refresh-dashboard --all` when you want a repo-local portfolio overview.
 
 ## Notes
 

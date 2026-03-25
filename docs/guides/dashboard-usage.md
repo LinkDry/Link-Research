@@ -34,12 +34,19 @@ For all live projects:
 python -m tools.link_research_cli refresh-dashboard --all
 ```
 
+Running `--all` also writes a repo-local portfolio overview to:
+
+- `.link-research/dashboard/index.html`
+
+That portfolio page is intentionally local convenience state, so it can be regenerated freely without becoming project truth.
+
 ## Output Files
 
 Refreshing writes:
 
 - `projects/<slug>/workspace/dashboard-data.json`
 - `projects/<slug>/workspace/dashboard.html`
+- `.link-research/dashboard/index.html` when `--all` is used
 
 `dashboard-data.json` is the machine-friendly projection.
 
@@ -51,6 +58,7 @@ Refreshing writes:
 2. Run or resume work through Claude.
 3. Refresh the dashboard when you want a cleaner visual summary.
 4. If a human-gated decision appears, review the canonical files before acting.
+5. Use the portfolio page when you need a multi-project dashboard rather than a single-project view.
 
 ## Safety Rule
 
