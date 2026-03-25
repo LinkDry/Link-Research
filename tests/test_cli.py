@@ -11,9 +11,10 @@ def repo_fixture(tmp_path: Path) -> Path:
     source_root = Path(__file__).resolve().parents[1]
     import shutil
 
-    shutil.copytree(source_root / "projects", tmp_path / "projects")
+    shutil.copytree(source_root / "scaffold", tmp_path / "scaffold")
     shutil.copytree(source_root / "memory", tmp_path / "memory")
     shutil.copytree(source_root / "skills", tmp_path / "skills")
+    (tmp_path / "projects").mkdir(parents=True, exist_ok=True)
     return tmp_path
 
 
@@ -80,9 +81,29 @@ def test_readme_documents_cli_quickstart():
     assert "python -m tools.link_research_cli current-project" in content
     assert "python -m tools.link_research_cli refresh-dashboard" in content
     assert ".link-research/dashboard/index.html" in content
+    assert "scaffold/project/" in content
     assert "docs/guides/phase1-quickstart.md" in content
     assert "docs/guides/recovery-and-resume.md" in content
     assert "docs/guides/dashboard-usage.md" in content
+    assert "claude mcp add codex -s user -- codex mcp-server" in content
+    assert 'codex exec -m gpt-5.4 "Reply with exactly: GPT54_OK"' in content
+    assert "novelty-check" in content
+    assert "phase2-publish" in content
+    assert "Link-Research V2" not in content
+    assert "V2 rebuild" not in content
+
+
+def test_root_claude_entrypoint_exists_and_points_to_live_surface():
+    claude = Path(__file__).resolve().parents[1] / "CLAUDE.md"
+
+    assert claude.exists()
+    content = claude.read_text(encoding="utf-8")
+    assert "current-project" in content
+    assert "phase1-quickstart.md" in content
+    assert "STATE.md" in content
+    assert "Codex MCP" in content
+    assert "GPT-5.4" in content
+    assert "novelty-check" in content
 
 
 def test_operator_guides_exist():

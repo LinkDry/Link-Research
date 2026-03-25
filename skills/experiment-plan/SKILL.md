@@ -9,7 +9,7 @@ description: Use to create the canonical `experiment-plan.md` for either the fir
 
 Create the concrete validation plan that `anchor-wrapper` can lock.
 
-In V2, `experiment-plan` is the bridge from bootstrap ideation or branch continuation into canonical active Experiment State.
+`experiment-plan` is the bridge from bootstrap ideation or branch continuation into canonical active Experiment State.
 
 ## When to Use
 
@@ -104,7 +104,26 @@ The plan must include:
 
 Do not leave placeholder-level vagueness for `anchor-wrapper` to guess around later.
 
-### 4. Instantiate Or Refresh Active Experiment State
+### 4. Optional Cross-Model Review
+
+If Codex MCP is available, you may request an advisory second opinion on:
+
+- falsifiability of the hypothesis
+- adequacy of baselines, metrics, and thresholds
+- whether mutable versus immutable boundaries are drawn clearly
+- confounders or execution risks that would make the plan hard to interpret
+- whether the success criteria are strong enough to justify later anchor lock
+
+Rules:
+
+- treat the external review as advisory only
+- revise the plan conservatively before anchor lock when the critique exposes a real planning gap
+- if disagreement is material, keep the more conservative plan
+- if no safe plan remains after review, stop without instantiating the active line
+
+Record any adopted critique in `experiment-plan.md`.
+
+### 5. Instantiate Or Refresh Active Experiment State
 
 Update `experiment-memory.md`:
 
@@ -123,7 +142,7 @@ Update `experiment-memory.md`:
 
 Preserve prior history tables and branch outcomes for older lines.
 
-### 5. Update Branch Governance
+### 6. Update Branch Governance
 
 Update `decision-tree.md`:
 
@@ -134,7 +153,7 @@ Update `decision-tree.md`:
 
 Do not claim the anchor exists yet. This step establishes a planned active line, not a locked one.
 
-### 6. Update Project Steering State
+### 7. Update Project Steering State
 
 Update `STATE.md`:
 
@@ -156,6 +175,7 @@ Stop without writing if:
 - no selected idea or safe branch target can be resolved
 - required plan sections cannot be authored from the available evidence
 - the request would require rewriting a locked anchor or silently reusing an unsafe same-idea slot
+- external critique reveals an unresolved planning gap that makes anchor lock unsafe
 
 When stopping, report the exact blocking contract issue.
 
@@ -166,3 +186,4 @@ When stopping, report the exact blocking contract issue.
 - [ ] Updated `decision-tree.md` only to reflect a planned active branch, not a locked anchor
 - [ ] Left `anchor.md`, `results.tsv`, `review-state.json`, and dashboard data untouched
 - [ ] Preserved old history while making the new line explicit
+- [ ] Treated any cross-model review as advisory only

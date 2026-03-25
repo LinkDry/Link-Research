@@ -1,6 +1,6 @@
 ---
 name: phase2-publish
-description: Use for the approved V2 Phase 2 publication workflow after a validated line reaches `phase2-ready`.
+description: Use for the approved Phase 2 publication workflow after a validated line reaches `phase2-ready`.
 ---
 
 # Phase2 Publish
@@ -9,7 +9,7 @@ description: Use for the approved V2 Phase 2 publication workflow after a valida
 
 Turn one validated Phase 1 line into a conservative publication package.
 
-This skill is the approved publication workflow that `overnight` delegates to in V2. It owns
+This skill is the approved publication workflow that `overnight` delegates to. It owns
 publication artifacts under `projects/<slug>/papers/` plus the corresponding steering updates in
 `STATE.md`. It does not rewrite scientific evidence, anchors, or run state.
 
@@ -134,7 +134,23 @@ The draft should include:
 
 Keep the draft evidence-traceable. Do not treat this file as canonical scientific state.
 
-### 5. Write A Publication Review Note
+### 5. Optional Cross-Model Review
+
+If Codex MCP is available, you may request an advisory second opinion on:
+
+- claims-evidence traceability in the current draft
+- overclaim or framing drift relative to the locked anchor and judged evidence
+- missing caveats, limitations, or methodology clarifications
+- publication-time integrity risks that are easier to spot from a reviewer posture
+
+Rules:
+
+- treat the external review as advisory only
+- do not let it rewrite canonical evidence or steering state on its own
+- if disagreement is material, keep the more conservative publication posture
+- record the outcome in the publication review note
+
+### 6. Write A Publication Review Note
 
 Write:
 
@@ -146,11 +162,12 @@ Summarize:
 - unresolved writing gaps
 - unresolved citation or bibliography gaps
 - publication-time integrity risks
+- cross-model review outcome when used
 - whether the line is ready to continue drafting, blocked for human review, or ready for final packaging
 
 Create additional `review-round-<n>` files for later passes instead of overwriting prior review history.
 
-### 6. Package Attributable Assets
+### 7. Package Attributable Assets
 
 Create:
 
@@ -165,7 +182,7 @@ Copy or snapshot only attributable publication assets there, such as:
 
 Do not move or rewrite canonical evidence files.
 
-### 7. Handle Publication-Time Integrity Failures Conservatively
+### 8. Handle Publication-Time Integrity Failures Conservatively
 
 If publication review reveals a flaw that cannot be resolved by rewriting alone, such as:
 
@@ -189,7 +206,7 @@ then:
 
 Do not paper over the problem by weakening claims silently.
 
-### 8. Finalize Steering State
+### 9. Finalize Steering State
 
 If the publication package is in a good handoff state:
 
@@ -223,3 +240,4 @@ When stopping, report the exact missing ref or contract conflict.
 - [ ] Did not mutate `results.tsv`, anchors, `experiment-memory.md`, `decision-tree.md`, or dashboard data
 - [ ] Kept the draft evidence-traceable to the validated line
 - [ ] Used blocker posture instead of silent overclaim when publication-time integrity failed
+- [ ] Treated any cross-model review as advisory only

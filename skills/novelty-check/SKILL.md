@@ -9,7 +9,7 @@ description: Use during Phase 1 bootstrap to conservatively screen candidate ide
 
 Filter the candidate set before committing the project to a concrete plan.
 
-In V2, `novelty-check` does not create the active experiment line. It writes a bootstrap decision artifact and, when one candidate is clearly preferred, may set `STATE.md.active_idea_id` to that selected idea.
+`novelty-check` does not create the active experiment line. It writes a bootstrap decision artifact and, when one candidate is clearly preferred, may set `STATE.md.active_idea_id` to that selected idea.
 
 ## When to Use
 
@@ -81,7 +81,25 @@ For each candidate, assess:
 - integrity or overclaim risk
 - whether it still fits the project constraints
 
-### 3. Select Exactly One Primary Idea
+### 3. Optional Cross-Model Review
+
+If Codex MCP is available, you may request an advisory second opinion on:
+
+- novelty overclaim risk
+- whether the top-ranked idea is genuinely the strongest next line
+- hidden validation blockers that would make the idea fragile in Phase 1
+- whether a conservative single-winner selection is justified from the current evidence
+
+Rules:
+
+- treat the external review as advisory only
+- do not let it select the winner on its own
+- if disagreement is material, keep the more conservative screening rationale
+- if no responsible single selection remains after conservative review, stop and report the ambiguity instead of forcing a winner
+
+Record any adopted critique in `novelty-check.md`.
+
+### 4. Select Exactly One Primary Idea
 
 Choose one primary idea when autonomous continuation is possible.
 
@@ -92,7 +110,7 @@ If multiple ideas remain plausible:
 
 Do not silently drop the alternatives.
 
-### 4. Write The Novelty Decision Artifact
+### 5. Write The Novelty Decision Artifact
 
 Write `projects/<slug>/workspace/bootstrap/novelty-check.md` using the documented bootstrap contract.
 
@@ -104,7 +122,7 @@ The artifact must include:
 - failure watchouts
 - deferred ideas plus revisit triggers
 
-### 5. Update Project Steering State
+### 6. Update Project Steering State
 
 Update `STATE.md`:
 
@@ -126,6 +144,7 @@ Stop without writing if:
 - the candidate artifact is missing or unreadable
 - idea IDs are absent or ambiguous
 - the selected idea cannot be justified without overstating novelty
+- conservative screening plus external critique leaves no clearly defensible single primary idea
 
 When stopping, report the exact ambiguity or missing input.
 
@@ -136,3 +155,4 @@ When stopping, report the exact ambiguity or missing input.
 - [ ] Updated only the novelty-check artifact plus `STATE.md`
 - [ ] Did not create an experiment line or anchor
 - [ ] Kept novelty claims conservative and evidence-backed
+- [ ] Treated any cross-model review as advisory only

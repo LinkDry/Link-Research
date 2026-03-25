@@ -47,6 +47,8 @@ During Phase 1, treat these files as the main truth surface:
 
 Use `python -m tools.link_research_cli current-project` whenever you want a compact summary instead of manually opening all three.
 
+When Codex MCP is configured, Claude may also use GPT-5.4 as an advisory reviewer during `novelty-check`, `experiment-plan`, `drift-detector`, and `judge`. Those reviews are there to make the line more conservative, not to replace canonical state ownership.
+
 ## 5. When to intervene
 
 Most iterations should stay automated. Step in when:
@@ -57,3 +59,16 @@ Most iterations should stay automated. Step in when:
 - you want to redirect the research objective itself
 
 When you do intervene, prefer explicit instructions tied to the canonical files rather than conversational guesses.
+
+## 6. Low-Typing Operator Mode
+
+Once the project is bootstrapped, the preferred workflow is short-intent steering rather than manual script operation.
+
+Claude should infer and run routine repo commands for you when intent is clear, for example:
+
+- "Show me where the current project stands." -> run `current-project`
+- "Refresh the dashboard." -> run `refresh-dashboard`
+- "Check whether the harness structure is still healthy." -> run `harness-lint`
+- "Switch to project <slug> and resume safely." -> run `switch-project`, then inspect canonical state
+
+Only high-impact decisions should require a pause. When Claude does pause, it should offer a small set of concrete options, recommend one, and let you override with a custom reply if needed.

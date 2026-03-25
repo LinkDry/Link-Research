@@ -84,6 +84,12 @@ If future variants are needed, keep this file as the currently active plan and a
 - methodological_risks:
 - implementation_risks:
 - integrity_risks:
+
+## Optional Advisory Review
+- reviewer:
+- summary:
+- adopted_changes:
+- unresolved_disagreements:
 ```
 
 ## Field Rules
@@ -154,3 +160,9 @@ If future variants are needed, keep this file as the currently active plan and a
 - `experiment-plan.md` is editable while planning remains open.
 - `anchor.md` is the locked record created from this plan.
 - Once the anchor is created, later scientific pivots should create a new plan revision or branch rather than silently rewriting the locked anchor.
+
+## Advisory Review Rule
+
+Any optional external or cross-model critique captured in this file is advisory only.
+
+The plan owner may use it to strengthen the experiment design before anchor lock, but it must not silently rewrite the meaning of a later locked anchor.

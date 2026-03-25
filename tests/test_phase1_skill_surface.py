@@ -55,3 +55,18 @@ def test_harness_lint_no_longer_reports_missing_delegate_skills():
     ]
 
     assert missing_delegate_findings == []
+
+
+def test_advisory_cross_model_review_markers_exist_for_selected_skills():
+    expected_skills = [
+        "novelty-check",
+        "experiment-plan",
+        "phase2-publish",
+    ]
+
+    for skill_name in expected_skills:
+        skill_path = REPO_ROOT / "skills" / skill_name / "SKILL.md"
+        content = skill_path.read_text(encoding="utf-8")
+        assert "Optional Cross-Model Review" in content
+        assert "Codex MCP" in content
+        assert "advisory only" in content

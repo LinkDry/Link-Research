@@ -44,6 +44,12 @@ But it is not itself canonical Project State.
 - why_now:
 - main_failure_watchouts:
 
+## Optional Cross-Model Review
+- reviewer:
+- summary:
+- adopted_points:
+- residual_disagreements:
+
 ## Deferred Ideas
 | idea_id | defer_reason | revisit_trigger |
 |---------|--------------|-----------------|
@@ -55,3 +61,4 @@ But it is not itself canonical Project State.
 2. Preserve deferred ideas explicitly instead of letting them disappear.
 3. Explain overlap risk and integrity risk directly.
 4. The selected idea may later become `STATE.md.active_idea_id`, but this artifact itself is still non-canonical.
+5. `Optional Cross-Model Review` is advisory only and must not silently override the selected idea.
