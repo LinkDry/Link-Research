@@ -1,1 +1,1 @@
-"""Repo-local tooling for Link-Research V2."""
+"""Repo-local tooling for Link-Research."""

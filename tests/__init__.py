@@ -1,1 +1,1 @@
-"""Test package for Link-Research V2 tooling."""
+"""Test package for Link-Research tooling."""

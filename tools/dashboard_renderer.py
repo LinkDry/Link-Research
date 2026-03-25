@@ -314,7 +314,7 @@ def render_dashboard_html(slug: str, dashboard: dict[str, Any]) -> str:
 <body>
   <main class="shell">
     <section class="hero">
-      <div class="eyebrow">Link-Research V2 Dashboard</div>
+      <div class="eyebrow">Link-Research Dashboard</div>
       <h1>{html.escape(title)}</h1>
       <p class="hero-subtitle">Current Steering for <code>projects/{html.escape(slug)}</code></p>
       <div class="badge-row">
@@ -521,7 +521,7 @@ def render_portfolio_html(projects: list[dict[str, Any]]) -> str:
 <body>
   <main class="shell">
     <section class="hero">
-      <p class="eyebrow">Link-Research V2 Portfolio</p>
+      <p class="eyebrow">Link-Research Portfolio</p>
       <h1>Research Portfolio</h1>
       <p class="hero-copy">Repo-local overview of live projects and their per-project dashboards. This page is derived and can be regenerated at any time.</p>
     </section>

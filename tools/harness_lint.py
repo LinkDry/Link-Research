@@ -14,14 +14,14 @@ from tools.project_state import (
 
 
 REQUIRED_REPO_FILES = [
-    "projects/_template/STATE.md",
-    "projects/_template/experiment-memory.md",
-    "projects/_template/review-state.json",
-    "projects/_template/results.tsv",
-    "projects/_template/project-brief.md",
-    "projects/_template/decision-tree.md",
-    "projects/_template/workspace/dashboard-data.json",
-    "projects/_template/workspace/bootstrap/.gitkeep",
+    "scaffold/project/STATE.md",
+    "scaffold/project/experiment-memory.md",
+    "scaffold/project/review-state.json",
+    "scaffold/project/results.tsv",
+    "scaffold/project/project-brief.md",
+    "scaffold/project/decision-tree.md",
+    "scaffold/project/workspace/dashboard-data.json",
+    "scaffold/project/workspace/bootstrap/.gitkeep",
     "memory/lessons-learned.md",
     "memory/failure-library.md",
 ]
@@ -104,16 +104,16 @@ def _lint_required_files(repo_root: Path, findings: list[dict[str, Any]]) -> Non
                 "error",
                 "missing-required-file",
                 relative_path,
-                "Required V2 repository file is missing.",
+                "Required scaffold or repository file is missing.",
             )
 
 
-def _lint_template_dashboard(repo_root: Path, findings: list[dict[str, Any]]) -> None:
+def _lint_scaffold_dashboard(repo_root: Path, findings: list[dict[str, Any]]) -> None:
     required_paths = [
-        repo_root / "projects" / "_template" / "STATE.md",
-        repo_root / "projects" / "_template" / "experiment-memory.md",
-        repo_root / "projects" / "_template" / "review-state.json",
-        repo_root / "projects" / "_template" / "workspace" / "dashboard-data.json",
+        repo_root / "scaffold" / "project" / "STATE.md",
+        repo_root / "scaffold" / "project" / "experiment-memory.md",
+        repo_root / "scaffold" / "project" / "review-state.json",
+        repo_root / "scaffold" / "project" / "workspace" / "dashboard-data.json",
     ]
     if not all(path.exists() for path in required_paths):
         return
@@ -129,8 +129,8 @@ def _lint_template_dashboard(repo_root: Path, findings: list[dict[str, Any]]) ->
             findings,
             "error",
             "dashboard-projection-mismatch",
-            "projects/_template/workspace/dashboard-data.json",
-            "Derived dashboard template is out of sync with canonical template state.",
+            "scaffold/project/workspace/dashboard-data.json",
+            "Derived scaffold dashboard is out of sync with canonical scaffold state.",
         )
 
 
@@ -141,7 +141,7 @@ def _lint_live_dashboards(repo_root: Path, findings: list[dict[str, Any]]) -> No
 
     memory_state = load_memory_state(repo_root)
     for child in sorted(projects_root.iterdir()):
-        if not child.is_dir() or child.name == "_template":
+        if not child.is_dir():
             continue
         state_path = child / "STATE.md"
         experiment_path = child / "experiment-memory.md"
@@ -295,7 +295,7 @@ def _lint_runtime_pointer(repo_root: Path, findings: list[dict[str, Any]]) -> No
 def run_harness_lint(repo_root: Path) -> dict[str, Any]:
     findings: list[dict[str, Any]] = []
     _lint_required_files(repo_root, findings)
-    _lint_template_dashboard(repo_root, findings)
+    _lint_scaffold_dashboard(repo_root, findings)
     _lint_live_dashboards(repo_root, findings)
     _lint_skill_contracts(repo_root, findings)
     _lint_delegate_targets(repo_root, findings)

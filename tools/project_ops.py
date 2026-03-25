@@ -45,8 +45,8 @@ def validate_project_slug(slug: str) -> str:
     return slug
 
 
-def _template_dir(repo_root: Path) -> Path:
-    return repo_root / "projects" / "_template"
+def _scaffold_dir(repo_root: Path) -> Path:
+    return repo_root / "scaffold" / "project"
 
 
 def _project_dir(repo_root: Path, slug: str) -> Path:
@@ -68,7 +68,7 @@ def _write_text(path: Path, content: str) -> None:
 
 def _instantiate_state(repo_root: Path, slug: str, title: str, timestamp: str) -> None:
     project_id = f"proj-{slug}"
-    template_path = _template_dir(repo_root) / "STATE.md"
+    template_path = _scaffold_dir(repo_root) / "STATE.md"
     content = template_path.read_text(encoding="utf-8")
     content = content.replace("proj-template", project_id)
     content = content.replace("Template Project", title)
@@ -79,7 +79,7 @@ def _instantiate_state(repo_root: Path, slug: str, title: str, timestamp: str) -
 
 def _instantiate_review_state(repo_root: Path, slug: str, timestamp: str) -> None:
     project_id = f"proj-{slug}"
-    template_path = _template_dir(repo_root) / "review-state.json"
+    template_path = _scaffold_dir(repo_root) / "review-state.json"
     data = load_json_file(template_path)
     data["run_id"] = f"run-bootstrap-{slug}"
     data["project_id"] = project_id
@@ -98,7 +98,7 @@ def _instantiate_review_state(repo_root: Path, slug: str, timestamp: str) -> Non
 
 
 def _instantiate_project_brief(repo_root: Path, slug: str, title: str, owner: str | None) -> None:
-    template_path = _template_dir(repo_root) / "project-brief.md"
+    template_path = _scaffold_dir(repo_root) / "project-brief.md"
     lines = template_path.read_text(encoding="utf-8").splitlines()
     updated_lines: list[str] = []
     for line in lines:
@@ -114,13 +114,13 @@ def _instantiate_project_brief(repo_root: Path, slug: str, title: str, owner: st
 
 
 def _instantiate_experiment_memory(repo_root: Path, slug: str, timestamp: str) -> None:
-    template_path = _template_dir(repo_root) / "experiment-memory.md"
+    template_path = _scaffold_dir(repo_root) / "experiment-memory.md"
     content = template_path.read_text(encoding="utf-8").replace(PLACEHOLDER_TIMESTAMP, timestamp)
     _write_text(_project_dir(repo_root, slug) / "experiment-memory.md", content)
 
 
 def _copy_static_file(repo_root: Path, slug: str, relative_path: str) -> None:
-    source = _template_dir(repo_root) / relative_path
+    source = _scaffold_dir(repo_root) / relative_path
     target = _project_dir(repo_root, slug) / relative_path
     _write_text(target, source.read_text(encoding="utf-8"))
 
@@ -155,7 +155,7 @@ def refresh_all_dashboards(repo_root: Path) -> list[dict[str, Any]]:
     projects_root = repo_root / "projects"
     refreshed: list[dict[str, Any]] = []
     for child in sorted(projects_root.iterdir()):
-        if not child.is_dir() or child.name == "_template":
+        if not child.is_dir():
             continue
         if not (child / "STATE.md").exists():
             continue
@@ -251,7 +251,7 @@ def list_projects(repo_root: Path) -> list[dict[str, Any]]:
 
     summaries: list[dict[str, Any]] = []
     for child in sorted(projects_root.iterdir()):
-        if not child.is_dir() or child.name == "_template":
+        if not child.is_dir():
             continue
         state_path = child / "STATE.md"
         if not state_path.exists():

@@ -13,8 +13,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 @pytest.fixture()
 def repo_fixture(tmp_path: Path) -> Path:
-    for name in ["projects", "memory", "skills"]:
+    shutil.copytree(REPO_ROOT / "scaffold", tmp_path / "scaffold")
+    for name in ["memory", "skills"]:
         shutil.copytree(REPO_ROOT / name, tmp_path / name)
+    (tmp_path / "projects").mkdir(parents=True, exist_ok=True)
     return tmp_path
 
 
@@ -22,8 +24,8 @@ def _finding_codes(report: dict) -> set[str]:
     return {finding["code"] for finding in report["findings"]}
 
 
-def test_lint_reports_missing_required_template_file(repo_fixture: Path):
-    (repo_fixture / "projects" / "_template" / "STATE.md").unlink()
+def test_lint_reports_missing_required_scaffold_file(repo_fixture: Path):
+    (repo_fixture / "scaffold" / "project" / "STATE.md").unlink()
 
     report = run_harness_lint(repo_fixture)
 
@@ -32,7 +34,7 @@ def test_lint_reports_missing_required_template_file(repo_fixture: Path):
 
 
 def test_lint_reports_dashboard_projection_mismatch(repo_fixture: Path):
-    dashboard_path = repo_fixture / "projects" / "_template" / "workspace" / "dashboard-data.json"
+    dashboard_path = repo_fixture / "scaffold" / "project" / "workspace" / "dashboard-data.json"
     dashboard = json.loads(dashboard_path.read_text(encoding="utf-8"))
     dashboard["project"]["project_id"] = "wrong-project"
     dashboard_path.write_text(json.dumps(dashboard, indent=2), encoding="utf-8")

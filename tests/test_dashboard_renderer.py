@@ -55,6 +55,7 @@ def test_render_dashboard_html_includes_core_sections():
     assert "Metric leaked task difficulty." in html
     assert '<script id="dashboard-data" type="application/json">' in html
     assert "Derived from canonical project files" in html
+    assert "Link-Research V2 Dashboard" not in html
 
 
 def test_render_portfolio_html_marks_current_project():
@@ -87,3 +88,4 @@ def test_render_portfolio_html_marks_current_project():
     assert "Demo Project" in html
     assert "Current focus" in html
     assert "projects/demo-project/workspace/dashboard.html" in html
+    assert "Link-Research V2 Portfolio" not in html
