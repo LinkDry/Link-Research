@@ -72,3 +72,12 @@ def test_advisory_cross_model_review_markers_exist_for_selected_skills():
         assert "Optional Cross-Model Review" in content
         assert "Codex MCP" in content
         assert "advisory only" in content
+
+
+def test_phase2_publish_explicitly_blocks_pending_phase2_handoff():
+    skill_path = REPO_ROOT / "skills" / "phase2-publish" / "SKILL.md"
+    content = skill_path.read_text(encoding="utf-8")
+
+    assert "decision_mode: human-gated" in content
+    assert "decision_type: phase2-handoff" in content
+    assert "stop and report" in content

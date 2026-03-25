@@ -34,7 +34,7 @@ Experiment State does not store:
 Experiment State is branch-aware, but the canonical `experiment-plan.md` and `anchor.md` paths are
 still idea-scoped today.
 
-Until V2 introduces branch-scoped paths, those files should be treated as a single active branch
+Until branch-scoped paths are introduced, those files should be treated as a single active branch
 slot per `idea_id`.
 
 That means same-idea sibling branch activation must move through an explicit governance decision
@@ -130,6 +130,9 @@ unless the existing slot is being safely repurposed after the prior line is clos
 It does not, by itself, mean the project has already entered `phase2`.
 
 `phase2-ready` may coexist with a human-gated `phase2-handoff` decision in `STATE.md` when the experiment has passed but the publication path still requires an explicit operator choice.
+
+While that `phase2-handoff` decision is still pending, publication skills must not take ownership of
+Phase 2 yet.
 
 The actual `STATE.md.phase` transition happens only when the Phase 2 orchestrator or publishing workflow starts.
 

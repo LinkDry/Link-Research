@@ -20,11 +20,14 @@ Use when:
 - `experiment-memory.md` shows `next_experiment_action: phase2-ready`
 - or `STATE.md.phase` is already `phase2`
 - the active line has a readable anchor and traceable evidence refs
+- no active `phase2-handoff` decision remains in `STATE.md`
 
 Do not use when:
 
 - the active line has not passed Phase 1
 - drift or verdict state is unresolved
+- `STATE.md.decision_mode` is `human-gated`
+- `STATE.md.decision_type` is `phase2-handoff`
 - the required evidence refs cannot be resolved safely
 
 ## Read / Write Contract
@@ -64,17 +67,24 @@ Before doing publication work, verify all of the following:
 
 - `latest_judge_verdict: pass`
 - `next_experiment_action: phase2-ready`
+- `STATE.md.decision_mode` is not `human-gated`
+- `STATE.md.decision_type` is not `phase2-handoff`
 - `anchor_path` is non-null and readable
 - `latest_result_ref`, `latest_analysis_ref`, and `latest_judge_report_ref` are readable
 - the linked `config-snapshot.json` can be resolved from the active evidence
 
-If any gate fails, stop and report the exact missing contract.
+If any gate fails, stop and report the exact missing contract. If a pending `phase2-handoff`
+decision still exists, stop and report that operator handoff must be completed before starting
+Phase 2.
 
 ## Protocol
 
 ### 1. Take Phase 2 Ownership
 
 If this workflow is the component actually starting Phase 2 for a handoff-ready line:
+
+- confirm `STATE.md` is not currently in `decision_mode: human-gated`
+- confirm `STATE.md` does not carry `decision_type: phase2-handoff`
 
 - update `STATE.md`
 - set `phase: phase2`
@@ -225,6 +235,8 @@ If the publication package is in a good handoff state:
 Stop without writing if:
 
 - the line is not `phase2-ready`
+- `STATE.md` is still `human-gated`
+- `STATE.md.decision_type` is `phase2-handoff`
 - required evidence refs cannot be resolved
 - the anchor is missing
 - the active line identity is ambiguous
@@ -234,6 +246,7 @@ When stopping, report the exact missing ref or contract conflict.
 ## Self-Check
 
 - [ ] Confirmed the active line is `phase2-ready` before starting publication work
+- [ ] Confirmed no active `decision_mode: human-gated` or `decision_type: phase2-handoff` gate remained before Phase 2 takeover
 - [ ] Flipped `STATE.md.phase` to `phase2` when this workflow actually took ownership of a handoff-ready line
 - [ ] Read only canonical project and experiment state plus referenced evidence artifacts
 - [ ] Wrote only `papers/` outputs plus steering updates in `STATE.md`
