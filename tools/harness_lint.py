@@ -25,6 +25,12 @@ REQUIRED_REPO_FILES = [
     "memory/failure-library.md",
 ]
 
+BARE_ARTIFACT_NAMES = {
+    "analysis-report.json",
+    "config-snapshot.json",
+    "judge-report.json",
+}
+
 DELEGATE_CONTEXT_KEYWORDS = [
     "bootstrap sequence",
     "route from canonical state",
@@ -79,7 +85,7 @@ def _extract_section_items(text: str, heading: str) -> list[str]:
         if stripped == heading:
             in_section = True
             continue
-        if in_section and stripped.startswith("### "):
+        if in_section and stripped.startswith("#"):
             break
         if in_section and stripped.startswith("- "):
             item = stripped[2:].strip()
@@ -143,6 +149,28 @@ def _lint_skill_contracts(repo_root: Path, findings: list[dict[str, Any]]) -> No
                 "contract-overlap",
                 str(skill_path.relative_to(repo_root)).replace("\\", "/"),
                 f"Path appears in both Write and Must Not Write: {entry}",
+            )
+
+        for heading in ["### Read", "### Write", "### Must Not Write"]:
+            for entry in _extract_section_items(text, heading):
+                for artifact_name in BARE_ARTIFACT_NAMES:
+                    if artifact_name in entry and "projects/<slug>/" not in entry:
+                        _add_finding(
+                            findings,
+                            "warning",
+                            "bare-artifact-ref",
+                            str(skill_path.relative_to(repo_root)).replace("\\", "/"),
+                            f"Artifact ref should use an explicit project-scoped path instead of bare basename: {entry}",
+                        )
+                        break
+
+        if "decision_options_ref" in text and "judge-report.json#decision-options" in text:
+            _add_finding(
+                findings,
+                "warning",
+                "noncanonical-decision-ref",
+                str(skill_path.relative_to(repo_root)).replace("\\", "/"),
+                "decision_options_ref should use the full project-scoped judge report path instead of a bare basename fragment.",
             )
 
 

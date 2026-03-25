@@ -161,7 +161,7 @@ Use exactly one of these steering postures:
   - set `decision_mode: human-gated`
   - set `human_attention` to `async-review` or `required-now`
   - set `decision_type: phase2-handoff`
-  - set `decision_options_ref` to the current `judge-report.json#decision-options`
+  - set `decision_options_ref` to `projects/<slug>/workspace/reviews/<experiment_id>/judge-report-<iteration>.json#decision-options`
   - set `next_action` to review the Phase 2 handoff options before starting the workflow
 
 In both cases, `experiment-memory.md` still records `next_experiment_action: phase2-ready`.
@@ -192,7 +192,7 @@ It must not update `Active Branch Register` as if the new branch already exists 
 
 ### Decision Ref Rule
 
-If a branch, archive, or handoff decision is pending, `STATE.md.decision_options_ref` should point to the current `judge-report.json#decision-options`.
+If a branch, archive, or handoff decision is pending, `STATE.md.decision_options_ref` should point to `projects/<slug>/workspace/reviews/<experiment_id>/judge-report-<iteration>.json#decision-options`.
 
 If `judge` leaves the project in a `human-gated` posture, it must also set:
 

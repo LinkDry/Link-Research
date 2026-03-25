@@ -35,7 +35,8 @@ Do not use when:
 - `projects/<slug>/decision-tree.md`
 - `projects/<slug>/plans/<idea>/anchor.md` when present
 - `projects/<slug>/plans/<idea>/experiment-plan.md` when present
-- `analysis-report.json` and `judge-report.json` through canonical refs when present
+- `projects/<slug>/workspace/results/<result-group-id>/analysis-report.json` through canonical refs when present
+- `projects/<slug>/workspace/reviews/<experiment_id>/judge-report-<iteration>.json` through canonical refs when present
 - attributable files under `projects/<slug>/workspace/`
 - `memory/lessons-learned.md`
 - `memory/failure-library.md`

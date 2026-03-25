@@ -38,8 +38,8 @@ Do not use when:
 - `projects/<slug>/experiment-memory.md`
 - `projects/<slug>/plans/<idea>/anchor.md`
 - `projects/<slug>/results.tsv`
-- `analysis-report.json` through `latest_analysis_ref` or the active result rows
-- `config-snapshot.json` through the active result rows' `artifact_path`
+- `projects/<slug>/workspace/results/<result-group-id>/analysis-report.json` through `latest_analysis_ref` or the active result rows
+- `projects/<slug>/workspace/results/<result-group-id>/config-snapshot.json` through the active result rows' `artifact_path`
 - `projects/<slug>/decision-tree.md`
 - `memory/lessons-learned.md`
 - `docs/policies/judge-policy.md`
@@ -248,7 +248,7 @@ Use these patterns:
 
 - `pass`
   - if no human handoff choice remains, keep `phase: phase1`, set `project_status: running`, `decision_mode: auto-report`, `human_attention: none`, clear `decision_type` plus `decision_options_ref`, and set `next_action: start the approved Phase 2 workflow for the validated line`
-  - if a real Phase 2 handoff choice is pending, keep `phase: phase1`, set `project_status: waiting-human`, `decision_mode: human-gated`, `human_attention: async-review` or `required-now`, set `decision_type: phase2-handoff`, set `decision_options_ref` to `judge-report.json#decision-options`, and set `next_action: review the Phase 2 handoff options before starting the workflow`
+  - if a real Phase 2 handoff choice is pending, keep `phase: phase1`, set `project_status: waiting-human`, `decision_mode: human-gated`, `human_attention: async-review` or `required-now`, set `decision_type: phase2-handoff`, set `decision_options_ref` to `projects/<slug>/workspace/reviews/<experiment_id>/judge-report-<iteration>.json#decision-options`, and set `next_action: review the Phase 2 handoff options before starting the workflow`
 - `tweak`
   - `project_status: running`
   - `decision_mode: auto-report`
@@ -257,10 +257,10 @@ Use these patterns:
   - `next_action: run the next bounded tweak iteration`
 - `rethink`
   - use autonomous `branch` only when the next branch plan and future anchor destination are unambiguous under the current path contract and the current idea-scoped plan or anchor slot can be safely reused; in that case keep `project_status: running`, `decision_mode: auto-report`, `human_attention: none`, clear `decision_type` plus `decision_options_ref`, and set `next_action: create the next bounded branch plan for the current line`
-  - if human review is required or the path contract is ambiguous, use `project_status: waiting-human`, `decision_mode: human-gated`, `human_attention: async-review` or `required-now`, populate `decision_type: branch-decision`, set `decision_options_ref` to `judge-report.json#decision-options`, and set `next_action: review branch options for the current line`
+  - if human review is required or the path contract is ambiguous, use `project_status: waiting-human`, `decision_mode: human-gated`, `human_attention: async-review` or `required-now`, populate `decision_type: branch-decision`, set `decision_options_ref` to `projects/<slug>/workspace/reviews/<experiment_id>/judge-report-<iteration>.json#decision-options`, and set `next_action: review branch options for the current line`
 - `archive`
   - if the archive decision is clear, use `project_status: running`, `decision_mode: auto-report`, `human_attention: none`, clear `decision_type` plus `decision_options_ref`, and set `next_action: run archive for the current line`
-  - if archive needs operator confirmation, use `project_status: waiting-human`, `decision_mode: human-gated`, `human_attention: required-now`, `decision_type: archive-review`, `next_action: review archive decision for the current line`, and set `decision_options_ref` to `judge-report.json#decision-options`
+  - if archive needs operator confirmation, use `project_status: waiting-human`, `decision_mode: human-gated`, `human_attention: required-now`, `decision_type: archive-review`, `next_action: review archive decision for the current line`, and set `decision_options_ref` to `projects/<slug>/workspace/reviews/<experiment_id>/judge-report-<iteration>.json#decision-options`
 
 Always update:
 
@@ -275,7 +275,7 @@ Update `decision-tree.md` only if the verdict changes branch governance posture.
 Allowed updates:
 
 - append a summary row to `Decision Log`
-- point `rationale_ref` to the current `judge-report.json`
+- point `rationale_ref` to `projects/<slug>/workspace/reviews/<experiment_id>/judge-report-<iteration>.json`
 
 Do not:
 

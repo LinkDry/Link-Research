@@ -35,8 +35,8 @@ Do not use when:
 - `projects/<slug>/experiment-memory.md`
 - `projects/<slug>/plans/<idea>/anchor.md`
 - `projects/<slug>/results.tsv`
-- `analysis-report.json` through `latest_analysis_ref` or `results.tsv.analysis_ref`
-- `config-snapshot.json` through the active result rows' `artifact_path`
+- `projects/<slug>/workspace/results/<result-group-id>/analysis-report.json` through `latest_analysis_ref` or `results.tsv.analysis_ref`
+- `projects/<slug>/workspace/results/<result-group-id>/config-snapshot.json` through the active result rows' `artifact_path`
 
 ### Write
 

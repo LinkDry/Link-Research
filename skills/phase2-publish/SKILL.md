@@ -36,7 +36,9 @@ Do not use when:
 - `projects/<slug>/experiment-memory.md`
 - `projects/<slug>/plans/<idea>/anchor.md` through `anchor_path`
 - `projects/<slug>/results.tsv`
-- `analysis-report.json`, `config-snapshot.json`, and `judge-report.json` through canonical refs
+- `projects/<slug>/workspace/results/<result-group-id>/analysis-report.json` through canonical refs
+- `projects/<slug>/workspace/results/<result-group-id>/config-snapshot.json` through canonical refs
+- `projects/<slug>/workspace/reviews/<experiment_id>/judge-report-<iteration>.json` through canonical refs
 - existing files under `projects/<slug>/papers/drafts/`, `projects/<slug>/papers/reviews/`, and `projects/<slug>/papers/assets/` when resuming or revising
 
 ### Write

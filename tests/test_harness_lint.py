@@ -124,3 +124,50 @@ def test_lint_reports_invalid_runtime_pointer(repo_fixture: Path):
     report = run_harness_lint(repo_fixture)
 
     assert "invalid-runtime-pointer" in _finding_codes(report)
+
+
+def test_lint_reports_bare_artifact_refs_in_skill_contract(repo_fixture: Path):
+    skill_dir = repo_fixture / "skills" / "artifact-bad-skill"
+    skill_dir.mkdir(parents=True, exist_ok=True)
+    (skill_dir / "SKILL.md").write_text(
+        """---
+name: artifact-bad-skill
+description: bad artifact ref skill
+---
+
+# Artifact Bad Skill
+
+## Read / Write Contract
+
+### Read
+
+- `analysis-report.json` through canonical refs
+- `config-snapshot.json` through canonical refs
+""",
+        encoding="utf-8",
+    )
+
+    report = run_harness_lint(repo_fixture)
+
+    assert "bare-artifact-ref" in _finding_codes(report)
+
+
+def test_lint_reports_noncanonical_decision_option_ref(repo_fixture: Path):
+    skill_dir = repo_fixture / "skills" / "decision-bad-skill"
+    skill_dir.mkdir(parents=True, exist_ok=True)
+    (skill_dir / "SKILL.md").write_text(
+        """---
+name: decision-bad-skill
+description: bad decision ref skill
+---
+
+# Decision Bad Skill
+
+Set `decision_options_ref` to `judge-report.json#decision-options`.
+""",
+        encoding="utf-8",
+    )
+
+    report = run_harness_lint(repo_fixture)
+
+    assert "noncanonical-decision-ref" in _finding_codes(report)
