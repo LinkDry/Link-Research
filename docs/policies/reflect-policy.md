@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document is the single authoritative policy for V2 `reflect`.
+This document is the single authoritative policy for `reflect`.
 
 `reflect` is a session-synthesis skill, not a catch-all maintenance skill. Its job is to convert session outcomes into reusable memory while keeping the compact project summary current.
 

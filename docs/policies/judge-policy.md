@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document is the single authoritative policy for Phase 1 verdicting in Link-Research V2.
+This document is the single authoritative policy for Phase 1 verdicting in Link-Research.
 
 It exists to prevent V1-style drift where different skills or docs each invented their own archive threshold, Phase 2 gate, or branch-decision behavior.
 
@@ -70,7 +70,7 @@ Use when:
 
 ## Unified Forced-Stop Policy
 
-This is the only authoritative repeated-failure rule in V2.
+This is the only authoritative repeated-failure rule in the current architecture.
 
 ### Counter Definition
 
@@ -121,7 +121,7 @@ Choose `archive` when:
 
 ### Current Branch Slot Rule
 
-V2 state is branch-aware, but the canonical `experiment-plan.md` and `anchor.md` files are still
+Current state is branch-aware, but the canonical `experiment-plan.md` and `anchor.md` files are still
 idea-scoped paths.
 
 Until branch-scoped plan and anchor paths exist, those files should be treated as a single active

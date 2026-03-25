@@ -9,7 +9,7 @@ description: Use for long-running Phase 1 or Phase 2 orchestration when the proj
 
 Run the research system for an extended stretch without turning the orchestrator into a hidden owner of scientific truth.
 
-In V2, `overnight` is a run controller. It owns checkpointing, sequencing, pause/resume, and run summaries. It does not own experiment verdicts, archive narratives, or reusable memory.
+`overnight` is a run controller. It owns checkpointing, sequencing, pause/resume, and run summaries. It does not own experiment verdicts, archive narratives, or reusable memory.
 
 ## When to Use
 

@@ -9,7 +9,7 @@ description: Use when a meaningful work session or run segment has ended and reu
 
 Summarize the session and preserve only what should survive it.
 
-In V2, `reflect` is intentionally narrow: it extracts reusable lessons, normalizes capability gaps, and refreshes the compact project summary. It is not a maintenance dispatcher or a hidden governance writer.
+`reflect` is intentionally narrow: it extracts reusable lessons, normalizes capability gaps, and refreshes the compact project summary. It is not a maintenance dispatcher or a hidden governance writer.
 
 ## When to Use
 

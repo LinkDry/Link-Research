@@ -12,7 +12,7 @@ It exists to make long-running execution recoverable, resumable, and inspectable
 
 ## Canonical Role
 
-For V2, `review-state.json` is the canonical persisted controller for an active or resumable run.
+`review-state.json` is the canonical persisted controller for an active or resumable run.
 
 If a run exists, this file should be sufficient to answer:
 

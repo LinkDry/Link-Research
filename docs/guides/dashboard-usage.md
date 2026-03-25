@@ -1,6 +1,6 @@
 # Dashboard Usage
 
-The V2 dashboard is a derived steering view, not a source of truth.
+The dashboard is a derived steering view, not a source of truth.
 
 ## Canonical vs Derived
 

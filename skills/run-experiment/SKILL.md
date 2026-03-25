@@ -9,7 +9,7 @@ description: Use when an anchored line is ready for a real evaluation event and 
 
 Record one real evaluation event as canonical evidence.
 
-In V2, `run-experiment` is the evidence-recording bridge between an anchored plan and downstream interpretation. It owns the append-only result rows and the concrete config snapshot for what actually ran.
+`run-experiment` is the evidence-recording bridge between an anchored plan and downstream interpretation. It owns the append-only result rows and the concrete config snapshot for what actually ran.
 
 ## When to Use
 

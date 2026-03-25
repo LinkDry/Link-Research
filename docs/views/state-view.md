@@ -17,7 +17,7 @@ Its job is to answer, at a glance:
 
 ## Canonical Role
 
-For V2, `STATE.md` is the canonical persisted summary of current project steering state.
+`STATE.md` is the canonical persisted summary of current project steering state.
 
 It may reference:
 

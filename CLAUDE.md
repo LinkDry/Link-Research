@@ -82,4 +82,4 @@ Pause first for actions such as archive decisions, destructive cleanup, remote e
 ## Maintenance
 
 - Use `scaffold/project/` as the canonical seed for new projects and fixture validation.
-- Keep old planning artifacts in `docs/plans/` as history, but route live work through the current CLI, current skills, and current schema docs.
+- Historical context lives in `docs/history-summary.md`; route live work through the current CLI, current skills, and current schema docs.

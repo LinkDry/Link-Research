@@ -1,10 +1,10 @@
 # Object-to-File Mapping Rules
 
-This document defines how Link-Research V2 state objects map onto repository files.
+This document defines how Link-Research state objects map onto repository files.
 
 ## Core Rule
 
-In V2, each state object has one canonical primary view file for persistence.
+In the current architecture, each state object has one canonical primary view file for persistence.
 
 Other files may exist as:
 

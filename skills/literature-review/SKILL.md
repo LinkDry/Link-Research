@@ -9,7 +9,7 @@ description: Use at the start of Phase 1 bootstrap to turn the project brief int
 
 Build the first durable research-context artifact for a project.
 
-In V2, `literature-review` is a bootstrap planning skill. It does not create an active experiment line. It produces a scoped landscape artifact that later bootstrap skills can consume safely.
+`literature-review` is a bootstrap planning skill. It does not create an active experiment line. It produces a scoped landscape artifact that later bootstrap skills can consume safely.
 
 ## When to Use
 

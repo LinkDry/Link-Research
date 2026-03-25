@@ -1,6 +1,6 @@
 # Field Conventions
 
-This document defines the shared naming and reference conventions for Link-Research V2.
+This document defines the shared naming and reference conventions for Link-Research.
 
 ## Naming Categories
 

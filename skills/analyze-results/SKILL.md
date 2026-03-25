@@ -9,7 +9,7 @@ description: Use after a new result group has been recorded to write a structure
 
 Interpret the latest result group conservatively into a structured analysis artifact.
 
-In V2, `analyze-results` owns `analysis-report.json`. It does not own verdicts, drift decisions, or the raw evidence ledger.
+`analyze-results` owns `analysis-report.json`. It does not own verdicts, drift decisions, or the raw evidence ledger.
 
 ## When to Use
 

@@ -17,7 +17,7 @@ It should show:
 
 ## Canonical Role
 
-For V2, `experiment-memory.md` is the canonical persisted summary of the current active experiment line.
+`experiment-memory.md` is the canonical persisted summary of the current active experiment line.
 
 It may reference:
 

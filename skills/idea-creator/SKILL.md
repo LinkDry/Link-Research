@@ -9,7 +9,7 @@ description: Use during Phase 1 bootstrap to turn the literature-review artifact
 
 Turn research context into a small set of candidate ideas that are concrete enough to validate.
 
-In V2, `idea-creator` is still part of bootstrap. It creates durable candidate ideas, but it does not yet create the canonical active experiment line.
+`idea-creator` is still part of bootstrap. It creates durable candidate ideas, but it does not yet create the canonical active experiment line.
 
 ## When to Use
 

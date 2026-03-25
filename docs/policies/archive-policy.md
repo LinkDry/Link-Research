@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document is the single authoritative policy for closing an experiment line in Link-Research V2.
+This document is the single authoritative policy for closing an experiment line in Link-Research.
 
 It exists to keep archival safe, traceable, and reusable without letting cleanup logic destroy evidence or blur project-local history with global memory.
 
@@ -61,7 +61,7 @@ For workspace artifacts attributable to the archived line:
 2. if ownership is ambiguous, do not auto-delete
 3. instead, record the unresolved paths in the archive record
 
-Automatic deletion is not the default archival behavior in V2.
+Automatic deletion is not the default archival behavior in this harness.
 
 ## Global Memory Promotion Rule
 

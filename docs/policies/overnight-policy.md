@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document is the single authoritative policy for V2 `overnight`.
+This document is the single authoritative policy for `overnight`.
 
 `overnight` is the run controller for long-running autonomous or semi-autonomous execution. It exists to keep runs recoverable, bounded, and honest without turning run state into a hidden source of scientific truth.
 
@@ -73,11 +73,11 @@ In that case:
 
 ## Phase 1 Routing Model
 
-Phase 1 has two parts in V2.
+Phase 1 has two parts in the current architecture.
 
 ### 1. Bootstrap Segment
 
-When no active experiment line exists yet, `overnight` may use a fixed approved bootstrap mini-sequence because V2 does not yet have a separate canonical Idea State object.
+When no active experiment line exists yet, `overnight` may use a fixed approved bootstrap mini-sequence because the system does not yet have a separate canonical Idea State object.
 
 Approved bootstrap sequence:
 
@@ -167,7 +167,7 @@ then `overnight` should:
 
 ## Phase 2 Delegation Rule
 
-V2 `overnight` must not inline a second copy of the publication workflow.
+`overnight` must not inline a second copy of the publication workflow.
 
 Instead:
 
@@ -179,7 +179,7 @@ This keeps `overnight` focused on run control rather than paper semantics.
 
 ## Error Rule
 
-V2 is strict about core steps.
+The harness is strict about core steps.
 
 ### Core Scientific Or Governance Steps
 

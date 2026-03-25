@@ -9,7 +9,7 @@ description: Use when an experiment line must be closed after an archive verdict
 
 Close one experiment line without losing what it taught us.
 
-This skill preserves project-local case detail, promotes reusable lessons into global memory, and leaves active project state in a recoverable posture. In V2 it is move-or-snapshot oriented, not delete-first.
+This skill preserves project-local case detail, promotes reusable lessons into global memory, and leaves active project state in a recoverable posture. It is move-or-snapshot oriented, not delete-first.
 
 ## When to Use
 
