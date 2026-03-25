@@ -97,3 +97,49 @@ def test_load_current_project_summary_reads_selected_project(repo_fixture: Path)
     assert summary["phase"] == "phase0"
     assert summary["project_status"] == "idle"
     assert "project-brief.md" in summary["suggested_prompt"]
+
+
+def test_load_current_project_summary_preserves_human_gated_handoff(repo_fixture: Path):
+    project_dir = create_project(repo_root=repo_fixture, slug="demo-project", title="Demo Project")
+    write_runtime_pointer(repo_root=repo_fixture, slug="demo-project")
+
+    state_path = project_dir / "STATE.md"
+    state_text = state_path.read_text(encoding="utf-8")
+    state_text = state_text.replace("- phase: phase0", "- phase: phase1")
+    state_text = state_text.replace("- project_status: idle", "- project_status: waiting-human")
+    state_text = state_text.replace("- active_idea_id: null", "- active_idea_id: idea-demo")
+    state_text = state_text.replace("- active_branch_id: null", "- active_branch_id: branch-a")
+    state_text = state_text.replace("- current_run_id: null", "- current_run_id: run-bootstrap-demo-project")
+    state_text = state_text.replace("- decision_mode: auto-report", "- decision_mode: human-gated")
+    state_text = state_text.replace("- human_attention: none", "- human_attention: required-now")
+    state_text = state_text.replace(
+        "- decision_type: null",
+        "- decision_type: phase2-handoff\n- decision_options_ref: projects/demo-project/workspace/reviews/exp-demo/judge-report-02.json#decision-options",
+    )
+    state_path.write_text(state_text, encoding="utf-8")
+
+    experiment_path = project_dir / "experiment-memory.md"
+    experiment_text = experiment_path.read_text(encoding="utf-8")
+    experiment_text = experiment_text.replace("| idea_id | null |", "| idea_id | idea-demo |")
+    experiment_text = experiment_text.replace("| branch_id | null |", "| branch_id | branch-a |")
+    experiment_text = experiment_text.replace("| next_experiment_action | wait-human |", "| next_experiment_action | phase2-ready |")
+    experiment_path.write_text(experiment_text, encoding="utf-8")
+
+    review_path = project_dir / "review-state.json"
+    review_state = load_json_file(review_path)
+    review_state["status"] = "waiting-human"
+    review_state["resume_safe"] = False
+    review_state["decision_mode"] = "human-gated"
+    review_state["decision_type"] = "phase2-handoff"
+    review_state["decision_options_ref"] = (
+        "projects/demo-project/workspace/reviews/exp-demo/judge-report-02.json#decision-options"
+    )
+    review_path.write_text(json.dumps(review_state, indent=2), encoding="utf-8")
+
+    summary = load_current_project_summary(repo_root=repo_fixture)
+
+    assert summary is not None
+    assert summary["decision_mode"] == "human-gated"
+    assert summary["decision_type"] == "phase2-handoff"
+    assert summary["run_pointer_status"] == "matched"
+    assert "before starting Phase 2" in summary["suggested_prompt"]

@@ -126,19 +126,36 @@ def build_current_project_status(
     review_state: dict[str, Any],
 ) -> dict[str, Any]:
     current_run_id = state.get("current_run_id")
-    review_matches_state = bool(current_run_id) and review_state.get("run_id") == current_run_id
+    review_run_id = review_state.get("run_id")
+    if current_run_id is None:
+        run_pointer_status = "none"
+    elif review_run_id == current_run_id:
+        run_pointer_status = "matched"
+    else:
+        run_pointer_status = "stale"
+
+    review_matches_state = run_pointer_status == "matched"
 
     return {
         "slug": slug,
         "project_title": state.get("project_title"),
         "phase": state.get("phase"),
         "project_status": state.get("project_status"),
+        "decision_mode": state.get("decision_mode"),
+        "decision_type": state.get("decision_type"),
+        "decision_options_ref": state.get("decision_options_ref"),
         "active_idea_id": state.get("active_idea_id") or experiment.get("idea_id"),
         "active_branch_id": state.get("active_branch_id") or experiment.get("branch_id"),
         "current_run_id": current_run_id,
+        "run_pointer_status": run_pointer_status,
         "run_status": review_state.get("status") if review_matches_state else None,
         "current_step_name": review_state.get("current_step_name") if review_matches_state else None,
         "resume_safe": review_state.get("resume_safe") if review_matches_state else False,
+        "review_decision_mode": review_state.get("decision_mode") if review_matches_state else None,
+        "review_decision_type": review_state.get("decision_type") if review_matches_state else None,
+        "review_decision_options_ref": (
+            review_state.get("decision_options_ref") if review_matches_state else None
+        ),
         "human_attention": (
             review_state.get("human_attention")
             if review_matches_state
@@ -155,9 +172,45 @@ def suggest_operator_prompt(status: dict[str, Any]) -> str:
     project_root = f"projects/{status['slug']}"
     current_run_id = status.get("current_run_id")
     run_status = status.get("run_status")
+    run_pointer_status = status.get("run_pointer_status")
 
-    if current_run_id and run_status in {"running", "paused", "blocked"}:
+    if run_pointer_status == "stale":
+        return (
+            f"Ask Claude to inspect {project_root}/STATE.md and {project_root}/review-state.json before "
+            f"resuming. The current run pointer {current_run_id} does not match the run-state file, "
+            f"so do not continue execution until the mismatch is resolved."
+        )
+
+    decision_mode = status.get("decision_mode")
+    decision_type = status.get("decision_type") or status.get("review_decision_type")
+    decision_options_ref = status.get("decision_options_ref") or status.get("review_decision_options_ref")
+    waiting_human = (
+        status.get("project_status") == "waiting-human"
+        or run_status == "waiting-human"
+        or decision_mode == "human-gated"
+    )
+
+    if waiting_human:
+        decision_label = decision_type or "pending human-gated"
+        decision_ref = decision_options_ref or f"{project_root}/review-state.json"
+        if decision_type == "phase2-handoff" and status.get("next_experiment_action") == "phase2-ready":
+            return (
+                f"Ask Claude to review the pending Phase 2 handoff options in {decision_ref} and wait "
+                f"for operator choice before starting Phase 2."
+            )
+        return (
+            f"Ask Claude to inspect the pending {decision_label} decision in {decision_ref}, summarize "
+            f"the options, and do not auto-resume the run."
+        )
+
+    if current_run_id and run_status in {"running", "paused"}:
         step_name = status.get("current_step_name") or "the recorded step"
+        if status.get("resume_safe") is False:
+            return (
+                f"Ask Claude to inspect {project_root}/review-state.json for run {current_run_id}, "
+                f"explain whether resuming from {step_name} is safe, and do not continue execution "
+                f"until the safety check is explicit."
+            )
         return (
             f"Ask Claude to inspect {project_root}/review-state.json and resume run "
             f"{current_run_id} safely from {step_name} before starting any new branch."

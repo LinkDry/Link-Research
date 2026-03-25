@@ -113,3 +113,53 @@ def test_cli_current_project_handles_missing_runtime_pointer(repo_fixture: Path,
     captured = capsys.readouterr()
     assert exit_code == 1
     assert "No current project selected" in captured.err
+
+
+def test_cli_current_project_surfaces_human_gated_phase2_handoff(
+    repo_fixture: Path,
+    capsys: pytest.CaptureFixture[str],
+):
+    project_dir = create_project(repo_fixture, "demo-project", "Demo Project")
+    main(["switch-project", "--slug", "demo-project"], repo_root=repo_fixture)
+
+    state_path = project_dir / "STATE.md"
+    state_text = state_path.read_text(encoding="utf-8")
+    state_text = state_text.replace("- phase: phase0", "- phase: phase1")
+    state_text = state_text.replace("- project_status: idle", "- project_status: waiting-human")
+    state_text = state_text.replace("- active_idea_id: null", "- active_idea_id: idea-demo")
+    state_text = state_text.replace("- active_branch_id: null", "- active_branch_id: branch-a")
+    state_text = state_text.replace("- current_run_id: null", "- current_run_id: run-bootstrap-demo-project")
+    state_text = state_text.replace("- decision_mode: auto-report", "- decision_mode: human-gated")
+    state_text = state_text.replace("- human_attention: none", "- human_attention: required-now")
+    state_text = state_text.replace(
+        "- decision_type: null",
+        "- decision_type: phase2-handoff\n- decision_options_ref: projects/demo-project/workspace/reviews/exp-demo/judge-report-02.json#decision-options",
+    )
+    state_path.write_text(state_text, encoding="utf-8")
+
+    experiment_path = project_dir / "experiment-memory.md"
+    experiment_text = experiment_path.read_text(encoding="utf-8")
+    experiment_text = experiment_text.replace("| idea_id | null |", "| idea_id | idea-demo |")
+    experiment_text = experiment_text.replace("| branch_id | null |", "| branch_id | branch-a |")
+    experiment_text = experiment_text.replace("| next_experiment_action | wait-human |", "| next_experiment_action | phase2-ready |")
+    experiment_path.write_text(experiment_text, encoding="utf-8")
+
+    review_path = project_dir / "review-state.json"
+    review_text = review_path.read_text(encoding="utf-8")
+    review_text = review_text.replace('"status": "completed"', '"status": "waiting-human"')
+    review_text = review_text.replace('"resume_safe": false', '"resume_safe": false')
+    review_text = review_text.replace('"decision_mode": "auto-report"', '"decision_mode": "human-gated"')
+    review_text = review_text.replace('"decision_type": null', '"decision_type": "phase2-handoff"')
+    review_text = review_text.replace(
+        '"decision_options_ref": null',
+        '"decision_options_ref": "projects/demo-project/workspace/reviews/exp-demo/judge-report-02.json#decision-options"',
+    )
+    review_path.write_text(review_text, encoding="utf-8")
+
+    exit_code = main(["current-project"], repo_root=repo_fixture)
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "Decision mode: human-gated" in captured.out
+    assert "Decision type: phase2-handoff" in captured.out
+    assert "before starting Phase 2" in captured.out

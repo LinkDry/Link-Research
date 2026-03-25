@@ -32,10 +32,14 @@ Typical cases:
 
 - `phase0` with no active idea:
   - resume Phase 1 bootstrap from `project-brief.md`
-- active run with `running`, `paused`, or `blocked` status:
+- active run with `running` or `paused` status and `resume_safe: true`:
   - ask Claude to inspect `review-state.json` and resume that run safely
-- `next_experiment_action: phase2-ready`:
+- `project_status: waiting-human` or run `status: waiting-human`:
+  - review the pending human-gated decision first; do not auto-resume
+- `next_experiment_action: phase2-ready` with no active `phase2-handoff` decision:
   - ask Claude to verify the evidence trail and start Phase 2
+- stale `current_run_id` versus `review-state.json.run_id`:
+  - stop and reconcile the mismatch before resuming any execution
 - everything else:
   - ask Claude to continue from `STATE.md.next_action`
 

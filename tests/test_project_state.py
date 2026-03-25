@@ -71,3 +71,64 @@ def test_suggest_operator_prompt_for_bootstrap_state():
 
     assert "project-brief.md" in prompt
     assert "Phase 1 bootstrap" in prompt
+
+
+def test_suggest_operator_prompt_for_human_gated_phase2_handoff():
+    state = parse_state_markdown(TEMPLATE_DIR / "STATE.md")
+    experiment = parse_experiment_memory(TEMPLATE_DIR / "experiment-memory.md")
+    review_state = load_json_file(TEMPLATE_DIR / "review-state.json")
+
+    state.update(
+        {
+            "phase": "phase1",
+            "project_status": "waiting-human",
+            "active_idea_id": "idea-demo",
+            "active_branch_id": "branch-a",
+            "current_run_id": "run-template",
+            "decision_mode": "human-gated",
+            "decision_type": "phase2-handoff",
+            "decision_options_ref": "projects/demo-project/workspace/reviews/exp-demo/judge-report-02.json#decision-options",
+        }
+    )
+    experiment["idea_id"] = "idea-demo"
+    experiment["branch_id"] = "branch-a"
+    experiment["next_experiment_action"] = "phase2-ready"
+    review_state["run_id"] = "run-template"
+    review_state["status"] = "waiting-human"
+    review_state["resume_safe"] = False
+    review_state["decision_mode"] = "human-gated"
+    review_state["decision_type"] = "phase2-handoff"
+    review_state["decision_options_ref"] = state["decision_options_ref"]
+
+    status = build_current_project_status("demo-project", state, experiment, review_state)
+    prompt = suggest_operator_prompt(status)
+
+    assert status["run_pointer_status"] == "matched"
+    assert status["decision_type"] == "phase2-handoff"
+    assert "handoff" in prompt.lower()
+    assert "before starting Phase 2" in prompt
+    assert "judge-report-02.json#decision-options" in prompt
+
+
+def test_suggest_operator_prompt_flags_stale_run_pointer():
+    state = parse_state_markdown(TEMPLATE_DIR / "STATE.md")
+    experiment = parse_experiment_memory(TEMPLATE_DIR / "experiment-memory.md")
+    review_state = load_json_file(TEMPLATE_DIR / "review-state.json")
+
+    state.update(
+        {
+            "phase": "phase1",
+            "project_status": "running",
+            "active_idea_id": "idea-demo",
+            "current_run_id": "run-expected",
+        }
+    )
+    review_state["run_id"] = "run-other"
+    review_state["status"] = "running"
+
+    status = build_current_project_status("demo-project", state, experiment, review_state)
+    prompt = suggest_operator_prompt(status)
+
+    assert status["run_pointer_status"] == "stale"
+    assert "does not match" in prompt
+    assert "do not continue" in prompt

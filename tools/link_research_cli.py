@@ -93,11 +93,15 @@ def _handle_current_project(repo_root: Path) -> int:
     print(f"Phase: {summary['phase']}")
     print(f"Status: {summary['project_status']}")
     print(f"Project path: {summary['project_path']}")
+    print(f"Decision mode: {summary['decision_mode']}")
+    print(f"Decision type: {summary['decision_type'] or 'none'}")
+    print(f"Run pointer: {summary['run_pointer_status']}")
     print(f"Active idea: {summary['active_idea_id'] or 'none'}")
     print(f"Active branch: {summary['active_branch_id'] or 'none'}")
     print(f"Current run: {summary['current_run_id'] or 'none'}")
     if summary["run_status"] is not None:
         print(f"Run status: {summary['run_status']}")
+        print(f"Resume safe: {summary['resume_safe']}")
     print(f"Next action: {summary['next_action']}")
     print(f"Suggested Claude prompt: {summary['suggested_prompt']}")
     return 0
