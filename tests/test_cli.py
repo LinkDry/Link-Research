@@ -85,10 +85,13 @@ def test_readme_documents_cli_quickstart():
     assert "docs/guides/phase1-quickstart.md" in content
     assert "docs/guides/recovery-and-resume.md" in content
     assert "docs/guides/dashboard-usage.md" in content
+    assert "docs/history-summary.md" in content
     assert "claude mcp add codex -s user -- codex mcp-server" in content
+    assert "python -m tools.link_research_cli codex-healthcheck" in content
     assert 'codex exec -m gpt-5.4 "Reply with exactly: GPT54_OK"' in content
     assert "novelty-check" in content
     assert "phase2-publish" in content
+    assert "lowercase letters, numbers, and hyphens only" in content
     assert "Link-Research V2" not in content
     assert "V2 rebuild" not in content
 
@@ -104,6 +107,8 @@ def test_root_claude_entrypoint_exists_and_points_to_live_surface():
     assert "Codex MCP" in content
     assert "GPT-5.4" in content
     assert "novelty-check" in content
+    assert "docs/history-summary.md" in content
+    assert "docs/plans/" not in content
 
 
 def test_operator_guides_exist():
@@ -130,6 +135,8 @@ def test_cli_current_project_reports_status_and_prompt(repo_fixture: Path, capsy
     assert exit_code == 0
     assert "Current project: demo-project" in captured.out
     assert "Phase: phase0" in captured.out
+    assert "Brief ready: no" in captured.out
+    assert "Missing brief fields:" in captured.out
     assert "Next action:" in captured.out
     assert "Suggested Claude prompt:" in captured.out
 
@@ -140,6 +147,17 @@ def test_cli_current_project_handles_missing_runtime_pointer(repo_fixture: Path,
     captured = capsys.readouterr()
     assert exit_code == 1
     assert "No current project selected" in captured.err
+    assert "new-project" in captured.err
+    assert "switch-project" in captured.err
+
+
+def test_cli_refresh_dashboard_handles_missing_runtime_pointer(repo_fixture: Path, capsys: pytest.CaptureFixture[str]):
+    exit_code = main(["refresh-dashboard"], repo_root=repo_fixture)
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "new-project" in captured.err
+    assert "switch-project" in captured.err
 
 
 def test_cli_current_project_surfaces_human_gated_phase2_handoff(
@@ -215,3 +233,28 @@ def test_cli_refresh_dashboard_all_projects(repo_fixture: Path, capsys: pytest.C
     assert "demo-project" in captured.out
     assert "second-project" in captured.out
     assert ".link-research/dashboard/index.html" in captured.out
+
+
+def test_cli_codex_healthcheck_reports_success(
+    repo_fixture: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+):
+    monkeypatch.setattr(
+        "tools.link_research_cli.run_codex_healthcheck",
+        lambda: {"ok": True, "message": "Claude MCP connected and GPT54_OK returned."},
+    )
+
+    exit_code = main(["codex-healthcheck"], repo_root=repo_fixture)
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "GPT54_OK" in captured.out
+
+
+def test_docs_history_summary_replaces_old_history_dirs():
+    repo_root = Path(__file__).resolve().parents[1]
+
+    assert (repo_root / "docs" / "history-summary.md").exists()
+    assert not (repo_root / "docs" / "plans").exists()
+    assert not (repo_root / "docs" / "skills").exists()

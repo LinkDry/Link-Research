@@ -221,7 +221,7 @@ If Codex MCP is available, you may request an advisory second opinion on the dri
 
 Rules:
 
-- treat the external review as advisory, not canonical state
+- treat the external review as advisory only, not canonical state
 - do not let it silently overwrite the primary decision record
 - if the models disagree materially, keep the more conservative operational posture and mention the disagreement in the user-facing output
 

@@ -27,8 +27,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 @pytest.fixture()
 def repo_fixture(tmp_path: Path) -> Path:
-    shutil.copytree(REPO_ROOT / "projects", tmp_path / "projects")
+    shutil.copytree(REPO_ROOT / "scaffold", tmp_path / "scaffold")
     shutil.copytree(REPO_ROOT / "memory", tmp_path / "memory")
+    (tmp_path / "projects").mkdir(parents=True, exist_ok=True)
     return tmp_path
 
 
@@ -102,7 +103,10 @@ def test_load_current_project_summary_reads_selected_project(repo_fixture: Path)
     assert summary["project_title"] == "Demo Project"
     assert summary["phase"] == "phase0"
     assert summary["project_status"] == "idle"
+    assert summary["brief_ready"] is False
+    assert "research_domain" in summary["brief_missing_fields"]
     assert "project-brief.md" in summary["suggested_prompt"]
+    assert "before starting Phase 1 bootstrap" in summary["suggested_prompt"]
 
 
 def test_load_current_project_summary_preserves_human_gated_handoff(repo_fixture: Path):

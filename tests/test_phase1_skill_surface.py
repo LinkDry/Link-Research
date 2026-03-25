@@ -61,6 +61,8 @@ def test_advisory_cross_model_review_markers_exist_for_selected_skills():
     expected_skills = [
         "novelty-check",
         "experiment-plan",
+        "drift-detector",
+        "judge",
         "phase2-publish",
     ]
 

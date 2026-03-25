@@ -13,6 +13,7 @@ python -m tools.link_research_cli current-project
 If no project is selected, switch first:
 
 ```bash
+python -m tools.link_research_cli new-project --slug <slug> --title "<title>"
 python -m tools.link_research_cli switch-project --slug <slug>
 ```
 
@@ -31,7 +32,8 @@ If you need more detail, open those files directly instead of relying on memory.
 Typical cases:
 
 - `phase0` with no active idea:
-  - resume Phase 1 bootstrap from `project-brief.md`
+  - if the brief is incomplete, finish `project-brief.md` before starting Phase 1 bootstrap
+  - otherwise resume Phase 1 bootstrap from `project-brief.md`
 - active run with `running` or `paused` status and `resume_safe: true`:
   - ask Claude to inspect `review-state.json` and resume that run safely
 - `project_status: waiting-human` or run `status: waiting-human`:

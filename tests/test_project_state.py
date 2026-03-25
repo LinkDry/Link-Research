@@ -4,20 +4,22 @@ from pathlib import Path
 from tools.project_state import (
     build_dashboard_projection,
     build_current_project_status,
+    evaluate_project_brief_readiness,
     load_memory_state,
     load_json_file,
     parse_experiment_memory,
+    parse_project_brief,
     parse_state_markdown,
     suggest_operator_prompt,
 )
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-TEMPLATE_DIR = REPO_ROOT / "projects" / "_template"
+SCAFFOLD_DIR = REPO_ROOT / "scaffold" / "project"
 
 
 def test_parse_state_markdown_reads_scalar_and_list_fields():
-    state = parse_state_markdown(TEMPLATE_DIR / "STATE.md")
+    state = parse_state_markdown(SCAFFOLD_DIR / "STATE.md")
 
     assert state["project_id"] == "proj-template"
     assert state["project_title"] == "Template Project"
@@ -27,7 +29,7 @@ def test_parse_state_markdown_reads_scalar_and_list_fields():
 
 
 def test_parse_experiment_memory_reads_active_line_snapshot():
-    experiment = parse_experiment_memory(TEMPLATE_DIR / "experiment-memory.md")
+    experiment = parse_experiment_memory(SCAFFOLD_DIR / "experiment-memory.md")
 
     assert experiment["experiment_id"] is None
     assert experiment["status"] == "planned"
@@ -36,22 +38,22 @@ def test_parse_experiment_memory_reads_active_line_snapshot():
     assert experiment["human_review_required"] is False
 
 
-def test_build_dashboard_projection_matches_template_fixture():
-    state = parse_state_markdown(TEMPLATE_DIR / "STATE.md")
-    experiment = parse_experiment_memory(TEMPLATE_DIR / "experiment-memory.md")
-    review_state = load_json_file(TEMPLATE_DIR / "review-state.json")
+def test_build_dashboard_projection_matches_scaffold_fixture():
+    state = parse_state_markdown(SCAFFOLD_DIR / "STATE.md")
+    experiment = parse_experiment_memory(SCAFFOLD_DIR / "experiment-memory.md")
+    review_state = load_json_file(SCAFFOLD_DIR / "review-state.json")
     memory_state = load_memory_state(REPO_ROOT)
 
     actual = build_dashboard_projection(state, experiment, review_state, memory_state)
-    expected = json.loads((TEMPLATE_DIR / "workspace" / "dashboard-data.json").read_text(encoding="utf-8"))
+    expected = json.loads((SCAFFOLD_DIR / "workspace" / "dashboard-data.json").read_text(encoding="utf-8"))
 
     assert actual == expected
 
 
 def test_build_current_project_status_uses_canonical_state():
-    state = parse_state_markdown(TEMPLATE_DIR / "STATE.md")
-    experiment = parse_experiment_memory(TEMPLATE_DIR / "experiment-memory.md")
-    review_state = load_json_file(TEMPLATE_DIR / "review-state.json")
+    state = parse_state_markdown(SCAFFOLD_DIR / "STATE.md")
+    experiment = parse_experiment_memory(SCAFFOLD_DIR / "experiment-memory.md")
+    review_state = load_json_file(SCAFFOLD_DIR / "review-state.json")
 
     status = build_current_project_status("demo-project", state, experiment, review_state)
 
@@ -64,21 +66,73 @@ def test_build_current_project_status_uses_canonical_state():
 
 
 def test_suggest_operator_prompt_for_bootstrap_state():
-    state = parse_state_markdown(TEMPLATE_DIR / "STATE.md")
-    experiment = parse_experiment_memory(TEMPLATE_DIR / "experiment-memory.md")
-    review_state = load_json_file(TEMPLATE_DIR / "review-state.json")
-    status = build_current_project_status("demo-project", state, experiment, review_state)
+    state = parse_state_markdown(SCAFFOLD_DIR / "STATE.md")
+    experiment = parse_experiment_memory(SCAFFOLD_DIR / "experiment-memory.md")
+    review_state = load_json_file(SCAFFOLD_DIR / "review-state.json")
+    brief = parse_project_brief(SCAFFOLD_DIR / "project-brief.md")
+    brief_status = evaluate_project_brief_readiness(brief)
+    status = build_current_project_status("demo-project", state, experiment, review_state, brief_status)
 
     prompt = suggest_operator_prompt(status)
 
     assert "project-brief.md" in prompt
+    assert "before starting Phase 1 bootstrap" in prompt
+    assert "direction_prompt" in prompt
+
+
+def test_parse_project_brief_and_readiness_detect_incomplete_bootstrap_state():
+    brief = parse_project_brief(SCAFFOLD_DIR / "project-brief.md")
+    readiness = evaluate_project_brief_readiness(brief)
+
+    assert brief["intake_mode"] == "direction-search"
+    assert readiness["brief_ready"] is False
+    assert "research_domain" in readiness["missing_fields"]
+    assert "direction_prompt" in readiness["missing_fields"]
+
+
+def test_project_brief_readiness_accepts_seed_papers_mode_with_required_fields():
+    brief = {
+        "research_domain": "nlp",
+        "target_problem": "grounded generation",
+        "intended_contribution_type": "method",
+        "in_scope": "citation-grounded generation",
+        "ethics_and_integrity_red_lines": "no fabricated citations",
+        "intake_mode": "seed-papers",
+        "seed_papers": "[paper-a, paper-b]",
+    }
+
+    readiness = evaluate_project_brief_readiness(brief)
+
+    assert readiness["brief_ready"] is True
+    assert readiness["missing_fields"] == []
+
+
+def test_suggest_operator_prompt_starts_phase1_only_after_brief_is_ready():
+    state = parse_state_markdown(SCAFFOLD_DIR / "STATE.md")
+    experiment = parse_experiment_memory(SCAFFOLD_DIR / "experiment-memory.md")
+    review_state = load_json_file(SCAFFOLD_DIR / "review-state.json")
+    ready_brief = {
+        "research_domain": "nlp",
+        "target_problem": "grounded generation",
+        "intended_contribution_type": "method",
+        "in_scope": "citation-grounded generation",
+        "ethics_and_integrity_red_lines": "no fabricated citations",
+        "intake_mode": "direction-search",
+        "direction_prompt": "Find a robust grounded generation research line.",
+    }
+    brief_status = evaluate_project_brief_readiness(ready_brief)
+    status = build_current_project_status("demo-project", state, experiment, review_state, brief_status)
+
+    prompt = suggest_operator_prompt(status)
+
     assert "Phase 1 bootstrap" in prompt
+    assert "before starting Phase 1 bootstrap" not in prompt
 
 
 def test_suggest_operator_prompt_for_human_gated_phase2_handoff():
-    state = parse_state_markdown(TEMPLATE_DIR / "STATE.md")
-    experiment = parse_experiment_memory(TEMPLATE_DIR / "experiment-memory.md")
-    review_state = load_json_file(TEMPLATE_DIR / "review-state.json")
+    state = parse_state_markdown(SCAFFOLD_DIR / "STATE.md")
+    experiment = parse_experiment_memory(SCAFFOLD_DIR / "experiment-memory.md")
+    review_state = load_json_file(SCAFFOLD_DIR / "review-state.json")
 
     state.update(
         {
@@ -113,9 +167,9 @@ def test_suggest_operator_prompt_for_human_gated_phase2_handoff():
 
 
 def test_suggest_operator_prompt_flags_stale_run_pointer():
-    state = parse_state_markdown(TEMPLATE_DIR / "STATE.md")
-    experiment = parse_experiment_memory(TEMPLATE_DIR / "experiment-memory.md")
-    review_state = load_json_file(TEMPLATE_DIR / "review-state.json")
+    state = parse_state_markdown(SCAFFOLD_DIR / "STATE.md")
+    experiment = parse_experiment_memory(SCAFFOLD_DIR / "experiment-memory.md")
+    review_state = load_json_file(SCAFFOLD_DIR / "review-state.json")
 
     state.update(
         {
@@ -184,9 +238,9 @@ def test_load_memory_state_reads_structured_sections(tmp_path: Path):
 
 
 def test_build_dashboard_projection_includes_memory_state():
-    state = parse_state_markdown(TEMPLATE_DIR / "STATE.md")
-    experiment = parse_experiment_memory(TEMPLATE_DIR / "experiment-memory.md")
-    review_state = load_json_file(TEMPLATE_DIR / "review-state.json")
+    state = parse_state_markdown(SCAFFOLD_DIR / "STATE.md")
+    experiment = parse_experiment_memory(SCAFFOLD_DIR / "experiment-memory.md")
+    review_state = load_json_file(SCAFFOLD_DIR / "review-state.json")
     memory_state = {
         "recent_lessons": [{"lesson_id": "lesson-001", "summary": "Lesson summary"}],
         "active_patterns": [{"pattern_id": "pattern-001", "summary": "Pattern summary"}],

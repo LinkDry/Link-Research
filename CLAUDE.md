@@ -18,6 +18,7 @@ Claude is the primary operator for this repository. Keep the workflow grounded i
 - Quickstart: `docs/guides/phase1-quickstart.md`
 - Resume and recovery: `docs/guides/recovery-and-resume.md`
 - Dashboard usage: `docs/guides/dashboard-usage.md`
+- Optional history context: `docs/history-summary.md`
 - Project scaffold source: `scaffold/project/`
 - Research skills: `skills/*/SKILL.md`
 
@@ -28,6 +29,7 @@ Claude is the primary operator for this repository. Keep the workflow grounded i
 - Current advisory review touchpoints are `novelty-check`, `experiment-plan`, `drift-detector`, `judge`, and `phase2-publish`.
 - These reviews are advisory only. They should harden novelty screening, experiment design, drift review, and publication accuracy, but they must not silently overwrite canonical project files on their own.
 - Health checks live at user scope, not in repo secrets. Typical validation is `claude mcp list` plus `codex exec -m gpt-5.4 "Reply with exactly: GPT54_OK"`.
+- For a repo-local end-to-end check, run `python -m tools.link_research_cli codex-healthcheck`.
 
 ## Default Operator Contract
 
@@ -45,6 +47,7 @@ Claude should normally execute these directly when the user's intent is clear:
 - "refresh the dashboard" -> `python -m tools.link_research_cli refresh-dashboard`
 - "refresh all dashboards" -> `python -m tools.link_research_cli refresh-dashboard --all`
 - "check the harness structure" -> `python -m tools.link_research_cli harness-lint`
+- "check Codex reviewer health" -> `python -m tools.link_research_cli codex-healthcheck`
 - "create a new project" with explicit slug and title -> `python -m tools.link_research_cli new-project ...` followed by `switch-project`
 - "switch to project <slug>" -> `python -m tools.link_research_cli switch-project --slug <slug>`
 
@@ -78,8 +81,10 @@ Pause first for actions such as archive decisions, destructive cleanup, remote e
 - `python -m tools.link_research_cli refresh-dashboard`
 - `python -m tools.link_research_cli refresh-dashboard --all`
 - `python -m tools.link_research_cli harness-lint`
+- `python -m tools.link_research_cli codex-healthcheck`
 
 ## Maintenance
 
 - Use `scaffold/project/` as the canonical seed for new projects and fixture validation.
-- Historical context lives in `docs/history-summary.md`; route live work through the current CLI, current skills, and current schema docs.
+- Route live work through `docs/guides/`, `docs/policies/`, `docs/schema/`, `docs/views/`, and root `skills/*/SKILL.md`.
+- Treat `docs/history-summary.md` as optional background only, not as an active operator spec.

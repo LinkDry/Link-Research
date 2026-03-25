@@ -12,6 +12,8 @@ python -m tools.link_research_cli current-project
 
 The last command confirms which project Claude should operate on and shows the next suggested prompt.
 
+Project slugs must use lowercase letters, numbers, and hyphens only.
+
 ## 2. Fill the project brief
 
 Open `projects/<slug>/project-brief.md` and fill the intake fields before asking Claude to start work.
@@ -46,6 +48,12 @@ During Phase 1, treat these files as the main truth surface:
 - `projects/<slug>/review-state.json`
 
 Use `python -m tools.link_research_cli current-project` whenever you want a compact summary instead of manually opening all three.
+
+If you want to verify the Claude -> Codex -> GPT-5.4 review path from the repo entrypoint, run:
+
+```bash
+python -m tools.link_research_cli codex-healthcheck
+```
 
 When Codex MCP is configured, Claude may also use GPT-5.4 as an advisory reviewer during `novelty-check`, `experiment-plan`, `drift-detector`, and `judge`. Those reviews are there to make the line more conservative, not to replace canonical state ownership.
 

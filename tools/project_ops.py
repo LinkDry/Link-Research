@@ -10,9 +10,11 @@ from tools.dashboard_renderer import render_dashboard_html, render_portfolio_htm
 from tools.project_state import (
     build_dashboard_projection,
     build_current_project_status,
+    evaluate_project_brief_readiness,
     load_memory_state,
     load_json_file,
     parse_experiment_memory,
+    parse_project_brief,
     parse_state_markdown,
     suggest_operator_prompt,
 )
@@ -153,6 +155,8 @@ def refresh_project_dashboard(repo_root: Path, slug: str) -> dict[str, Any]:
 
 def refresh_all_dashboards(repo_root: Path) -> list[dict[str, Any]]:
     projects_root = repo_root / "projects"
+    if not projects_root.exists():
+        return []
     refreshed: list[dict[str, Any]] = []
     for child in sorted(projects_root.iterdir()):
         if not child.is_dir():
@@ -236,8 +240,10 @@ def load_current_project_summary(repo_root: Path) -> dict[str, Any] | None:
         raise ValueError(f"Runtime pointer references missing project: {slug}")
 
     state, experiment, review_state = _load_project_snapshot(repo_root, slug)
+    project_brief = parse_project_brief(project_dir / "project-brief.md")
+    brief_status = evaluate_project_brief_readiness(project_brief)
 
-    summary = build_current_project_status(slug, state, experiment, review_state)
+    summary = build_current_project_status(slug, state, experiment, review_state, brief_status)
     summary["project_path"] = f"projects/{slug}"
     summary["dashboard_path"] = f"projects/{slug}/workspace/dashboard.html"
     summary["suggested_prompt"] = suggest_operator_prompt(summary)
@@ -246,6 +252,8 @@ def load_current_project_summary(repo_root: Path) -> dict[str, Any] | None:
 
 def list_projects(repo_root: Path) -> list[dict[str, Any]]:
     projects_root = repo_root / "projects"
+    if not projects_root.exists():
+        return []
     current = load_runtime_pointer(repo_root)
     current_slug = current["current_project_slug"] if current else None
 

@@ -43,6 +43,49 @@ def parse_state_markdown(path: Path) -> dict[str, Any]:
     return fields
 
 
+def parse_project_brief(path: Path) -> dict[str, Any]:
+    return parse_state_markdown(path)
+
+
+def _is_missing_brief_value(value: Any) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, str):
+        return value.strip() == ""
+    if isinstance(value, list):
+        return len(value) == 0
+    return False
+
+
+def evaluate_project_brief_readiness(project_brief: dict[str, Any]) -> dict[str, Any]:
+    missing_fields: list[str] = []
+    required_fields = [
+        "research_domain",
+        "target_problem",
+        "intended_contribution_type",
+        "in_scope",
+        "ethics_and_integrity_red_lines",
+        "intake_mode",
+    ]
+
+    for field in required_fields:
+        if _is_missing_brief_value(project_brief.get(field)):
+            missing_fields.append(field)
+
+    intake_mode = project_brief.get("intake_mode")
+    if intake_mode == "direction-search":
+        if _is_missing_brief_value(project_brief.get("direction_prompt")):
+            missing_fields.append("direction_prompt")
+    elif intake_mode == "seed-papers":
+        if _is_missing_brief_value(project_brief.get("seed_papers")):
+            missing_fields.append("seed_papers")
+
+    return {
+        "brief_ready": len(missing_fields) == 0,
+        "missing_fields": missing_fields,
+    }
+
+
 def parse_experiment_memory(path: Path) -> dict[str, Any]:
     lines = path.read_text(encoding="utf-8").splitlines()
     in_snapshot = False
@@ -161,7 +204,7 @@ def build_dashboard_projection(
     return {
         "meta": {
             "generated_at": state.get("last_updated"),
-            "schema_version": "v2-draft",
+            "schema_version": "schema-2026-03",
             "is_derived": True,
         },
         "project": {
@@ -202,7 +245,9 @@ def build_current_project_status(
     state: dict[str, Any],
     experiment: dict[str, Any],
     review_state: dict[str, Any],
+    brief_status: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    brief_status = brief_status or {"brief_ready": True, "missing_fields": []}
     current_run_id = state.get("current_run_id")
     review_run_id = review_state.get("run_id")
     if current_run_id is None:
@@ -243,6 +288,8 @@ def build_current_project_status(
         "next_experiment_action": experiment.get("next_experiment_action"),
         "latest_judge_verdict": experiment.get("latest_judge_verdict"),
         "latest_drift_score": experiment.get("latest_drift_score"),
+        "brief_ready": brief_status.get("brief_ready", True),
+        "brief_missing_fields": brief_status.get("missing_fields", []),
     }
 
 
@@ -301,6 +348,12 @@ def suggest_operator_prompt(status: dict[str, Any]) -> str:
         )
 
     if status.get("phase") == "phase0" or not status.get("active_idea_id"):
+        if not status.get("brief_ready", True):
+            missing = ", ".join(status.get("brief_missing_fields", [])) or "required intake fields"
+            return (
+                f"Ask Claude to inspect {project_root}/project-brief.md, identify the missing intake "
+                f"fields ({missing}), and help complete the brief before starting Phase 1 bootstrap."
+            )
         return (
             f"Ask Claude to read {project_root}/project-brief.md and begin the Phase 1 bootstrap "
             f"(intake mode selection, literature review, and first idea candidate generation)."

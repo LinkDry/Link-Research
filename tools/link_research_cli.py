@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
+from tools.codex_healthcheck import run_codex_healthcheck
 from tools.harness_lint import run_harness_lint
 from tools.project_ops import (
     create_project,
@@ -31,6 +32,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     subparsers.add_parser("list-projects")
     subparsers.add_parser("current-project")
+    subparsers.add_parser("codex-healthcheck")
     refresh_dashboard = subparsers.add_parser("refresh-dashboard")
     refresh_target = refresh_dashboard.add_mutually_exclusive_group()
     refresh_target.add_argument("--slug")
@@ -42,6 +44,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 def _default_repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
+
+
+def _safe_print(message: str, stream: object) -> None:
+    encoding = getattr(stream, "encoding", None) or "utf-8"
+    sanitized = message.encode(encoding, errors="replace").decode(encoding, errors="replace")
+    stream.write(sanitized + "\n")
 
 
 def _handle_new_project(args: argparse.Namespace, repo_root: Path) -> int:
@@ -106,7 +114,7 @@ def _handle_refresh_dashboard(args: argparse.Namespace, repo_root: Path) -> int:
     runtime = load_runtime_pointer(repo_root)
     if runtime is None:
         print(
-            "No current project selected. Run switch-project first or pass --slug.",
+            "No current project selected. Run new-project, switch-project, or pass --slug.",
             file=sys.stderr,
         )
         return 1
@@ -120,7 +128,8 @@ def _handle_current_project(repo_root: Path) -> int:
     summary = load_current_project_summary(repo_root)
     if summary is None:
         print(
-            "No current project selected. Run: python -m tools.link_research_cli switch-project --slug <slug>",
+            "No current project selected. Run: python -m tools.link_research_cli new-project --slug <slug> --title \"<title>\" "
+            "or python -m tools.link_research_cli switch-project --slug <slug>",
             file=sys.stderr,
         )
         return 1
@@ -136,12 +145,24 @@ def _handle_current_project(repo_root: Path) -> int:
     print(f"Active idea: {summary['active_idea_id'] or 'none'}")
     print(f"Active branch: {summary['active_branch_id'] or 'none'}")
     print(f"Current run: {summary['current_run_id'] or 'none'}")
+    print(f"Brief ready: {'yes' if summary['brief_ready'] else 'no'}")
+    if not summary["brief_ready"]:
+        print(f"Missing brief fields: {', '.join(summary['brief_missing_fields'])}")
     if summary["run_status"] is not None:
         print(f"Run status: {summary['run_status']}")
         print(f"Resume safe: {summary['resume_safe']}")
     print(f"Next action: {summary['next_action']}")
     print(f"Suggested Claude prompt: {summary['suggested_prompt']}")
     return 0
+
+
+def _handle_codex_healthcheck() -> int:
+    report = run_codex_healthcheck()
+    stream = sys.stdout if report["ok"] else sys.stderr
+    _safe_print(report["message"], stream)
+    if report.get("detail"):
+        _safe_print(report["detail"], stream)
+    return 0 if report["ok"] else 1
 
 
 def main(argv: Sequence[str] | None = None, repo_root: Path | None = None) -> int:
@@ -158,6 +179,8 @@ def main(argv: Sequence[str] | None = None, repo_root: Path | None = None) -> in
             return _handle_list_projects(root)
         if args.command == "current-project":
             return _handle_current_project(root)
+        if args.command == "codex-healthcheck":
+            return _handle_codex_healthcheck()
         if args.command == "refresh-dashboard":
             return _handle_refresh_dashboard(args, root)
         if args.command == "harness-lint":

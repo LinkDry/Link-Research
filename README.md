@@ -11,7 +11,7 @@ Claude is the primary operator. In normal use, you should not need to remember t
 The intended interaction model is:
 
 - you give Claude a direction, seed papers, or a short steering instruction
-- Claude decides when to run low-risk repo commands like `current-project`, `refresh-dashboard`, `list-projects`, or `harness-lint`
+- Claude decides when to run low-risk repo commands like `current-project`, `refresh-dashboard`, `list-projects`, `harness-lint`, or `codex-healthcheck`
 - Claude only pauses when a decision is high-impact, integrity-sensitive, expensive, or irreversible
 - when Claude does pause, it should present a small choice set with a recommendation rather than forcing a long freeform reply
 
@@ -57,11 +57,19 @@ Recommended verification:
 codex exec -m gpt-5.4 "Reply with exactly: GPT54_OK"
 ```
 
+Repo-local end-to-end healthcheck:
+
+```bash
+python -m tools.link_research_cli codex-healthcheck
+```
+
 If you use cc-switch or any other proxy layer, make sure both Claude and Codex are pointed at the same intended routing setup. This repo assumes those user-scope settings already exist; it does not override them locally.
 
 ## Quickstart
 
 Create a live project from the canonical scaffold:
+
+Project slugs must use lowercase letters, numbers, and hyphens only.
 
 ```bash
 python -m tools.link_research_cli new-project --slug demo-project --title "Demo Project"
@@ -103,6 +111,12 @@ Run the current harness contract checks:
 python -m tools.link_research_cli harness-lint
 ```
 
+Run the Claude -> Codex -> GPT-5.4 healthcheck:
+
+```bash
+python -m tools.link_research_cli codex-healthcheck
+```
+
 Run the tooling test suite:
 
 ```bash
@@ -116,6 +130,7 @@ For the real day-1 path into Phase 1, use:
 - `docs/guides/phase1-quickstart.md`
 - `docs/guides/recovery-and-resume.md`
 - `docs/guides/dashboard-usage.md`
+- `docs/history-summary.md`
 - `CLAUDE.md`
 
 The intended operator loop is:
@@ -135,6 +150,13 @@ The intended operator loop is:
 
 ## Notes
 
+- Current active docs are:
+  - `docs/guides/`
+  - `docs/policies/`
+  - `docs/schema/`
+  - `docs/views/`
+  - root `skills/*/SKILL.md`
+- `docs/history-summary.md` is optional background only. It is not an operator entrypoint.
 - `scaffold/project/` is the canonical scaffold and repo fixture source for new projects.
 - `projects/` is reserved for live projects only.
 - `.link-research/runtime.json` is local operator convenience state, not canonical research state.
