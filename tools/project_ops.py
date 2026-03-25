@@ -23,6 +23,7 @@ LIVE_PROJECT_DIRS = [
     "papers/drafts",
     "papers/reviews",
     "plans",
+    "workspace/bootstrap",
     "workspace/code",
     "workspace/data",
     "workspace/results",

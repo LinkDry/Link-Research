@@ -50,6 +50,7 @@ def test_create_project_instantiates_live_project_without_template_noise(repo_fi
     assert (project_dir / "experiment-memory.md").exists()
     assert (project_dir / "review-state.json").exists()
     assert (project_dir / "workspace" / "dashboard-data.json").exists()
+    assert (project_dir / "workspace" / "bootstrap").exists()
     assert (project_dir / "workspace" / "reviews").exists()
     assert (project_dir / "papers" / "drafts").exists()
     assert not (project_dir / "plans" / "_template-anchor.md").exists()

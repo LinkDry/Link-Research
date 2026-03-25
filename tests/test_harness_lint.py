@@ -71,6 +71,25 @@ description: bad test skill
 
 
 def test_lint_reports_missing_delegate_skill(repo_fixture: Path):
+    skill_dir = repo_fixture / "skills" / "delegate-bad-skill"
+    skill_dir.mkdir(parents=True, exist_ok=True)
+    (skill_dir / "SKILL.md").write_text(
+        """---
+name: delegate-bad-skill
+description: bad delegate test skill
+---
+
+# Delegate Bad Skill
+
+## Protocol
+
+Use:
+
+- `phantom-skill`
+""",
+        encoding="utf-8",
+    )
+
     report = run_harness_lint(repo_fixture)
 
     assert "missing-delegate-skill" in _finding_codes(report)

@@ -20,6 +20,7 @@ REQUIRED_REPO_FILES = [
     "projects/_template/project-brief.md",
     "projects/_template/decision-tree.md",
     "projects/_template/workspace/dashboard-data.json",
+    "projects/_template/workspace/bootstrap/.gitkeep",
     "memory/lessons-learned.md",
     "memory/failure-library.md",
 ]
